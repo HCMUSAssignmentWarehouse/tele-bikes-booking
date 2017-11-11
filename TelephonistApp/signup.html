@@ -77,7 +77,7 @@ body {
 }
 
 .login-username:before { 
-	content: "Login Form";
+	content: "Register Form";
 	color: #4c4c4c;	
 	font-size: 20px;
 	text-transform: uppercase;
@@ -189,7 +189,7 @@ body {
   <html>
 <head>
 <meta charset="UTF-8">
-<title>Sign In form</title>
+<title>Sign Up form</title>
 <link rel="stylesheet" type="text/css" href="style.css">
 <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
 </head>
@@ -207,14 +207,13 @@ body {
 		</p> 	
 		<p class="login-remember"><label><input type="checkbox" id="rememberme" value="forever"> Remember Me</label></p>
 		<p class="login-submit">
-			<button id="login" class="button-primary" onclick="login()">Log in</button>
+			<button id="login" class="button-primary" onclick="login()">Sign Up</button>
 		</p>
-		<a href="/forgot_password" style="margin-top: 16px; float: left; font-size: 14px; color: #1976D2; text-decoration: none;">Fogot password?</a> 	
-		<a href="/signup" style="margin-top: 16px; float: right; font-size: 14px; color: #1976D2; text-decoration: none;">Sign Up?</a> 	
+		
+		<a href="/login" style="margin-top: 16px; float: right; font-size: 14px; color: #1976D2; text-decoration: none;">Back to Login</a> 	
 	</div>
 	
 </div>
-
 <script src="/assests/jquery-3.1.1.min.js"></script>
 
 <script type="text/javascript">
@@ -224,13 +223,13 @@ body {
 			var _password = document.getElementById("password").value;
 
 			$.ajax({
-				url: `http://localhost:3000/verifyLogin?email=${_email}&password=${_password}`,
+				url: `http://localhost:3000/verifySignUp?email=${_email}&password=${_password}`,
 				dataType: 'json',
 				contentType: 'application/json',
 				timeout: 10000
 			}).done(function(data){
 				if (data.message == 'success'){
-					window.location = `./process`;
+					window.location = `./login`;
 				}else{
 					alert(data.message);
 				}	
@@ -241,8 +240,7 @@ body {
 				console.log(error);
 				console.log(jqXHR);
 			});
-
-
+			
 		}
 
 		

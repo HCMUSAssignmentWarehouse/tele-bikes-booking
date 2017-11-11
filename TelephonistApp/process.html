@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Telephone Bikes Booking</title>
+	 <link href="style.css" rel="stylesheet" type='text/css'>
+</head>
+<body>
+
+	<div id="profile" style="float: right;">
+		<button onclick="logout()">Log out</button>
+	</div>
+
+<div id="search-layout">
+	
+	<div class="form-wrapper">
+    <input type="text" id="search" placeholder="Search for..." required>
+    <button id="submit" onclick="search()">Go</button>
+	</div>
+
+<div id="list-layout">
+  <ul id="ul-history-list">
+   
+  </ul>
+</div>
+
+</div>
+
+<div id="new-book-deals-layout">
+	<div class="form-style-9">
+
+		<h1>New booking deal</h1>
+
+		<ul>
+		<li>
+		    <input type="text" id="phoneNumber" name="field1" class="field-style field-full align-none" placeholder="Phone number" />
+
+		</li>
+		<li>
+		    <input type="text" id="address" name="field3" class="field-style field-full align-none" placeholder="Address" />
+		</li>
+		<li>
+		<input type="text" id="vehicleType" name="field3" class="field-style field-full align-none" placeholder="Vehicle type" />
+		</li>
+		<li>
+		<textarea name="field5" id="note" class="field-style" placeholder="Note"></textarea>
+		</li>
+		<li>
+		<input type="button" value="Book" onclick="book()" />
+		</li>
+		</ul>
+	</div>
+</div>
+
+<script src="/assests/jquery-3.1.1.min.js"></script>
+
+
+<script type="text/javascript">
+
+		function book(){
+
+			var phoneNumber = document.getElementById("phoneNumber").value;
+			var address = document.getElementById("address").value;
+			var vehicleType = document.getElementById("vehicleType").value;
+			var note = document.getElementById("note").value;
+
+			$.ajax({
+				url: `http://localhost:3000/addNewBookingDeal?phoneNumber=${phoneNumber}&address=${address}&vehicleType=${vehicleType}&note=${note}`,
+				dataType: 'json',
+				contentType: 'application/json',
+				timeout: 10000
+			}).done(function(data){
+				if (data.message == 'success'){
+					alert("Add booking deadl success!");
+					document.getElementById("phoneNumber").value = "";
+					document.getElementById("address").value = "";
+					document.getElementById("vehicleType").value = "";
+					document.getElementById("note").value = "";
+				}else{
+					alert(data.message);
+				}	
+			
+			}).fail(function(jqXHR, textStatus, error){
+				alert(error);
+				console.log(textStatus);
+				console.log(error);
+				console.log(jqXHR);
+			});
+
+
+		}
+
+		
+	</script> 
+
+
+<script type="text/javascript">
+	function logout(){
+
+
+		$.ajax({
+				url: `http://localhost:3000/logout`,
+				dataType: 'json',
+				timeout: 10000
+			}).done(function(data){
+				if (data.message == 'success'){
+					window.location = `./login`;
+				}else{
+					alert(data.message);
+				}				
+			}).fail(function(jqXHR, textStatus, error){
+				alert(error);
+				console.log(textStatus);
+				console.log(error);
+				console.log(jqXHR);
+			});
+	}
+</script>
+
+<script type="text/javascript">
+	function search() {
+		var search_value = document.getElementById("search").value;
+		$("#ul-history-list").empty();
+
+		$.ajax({
+				url: `http://localhost:3000/history?phoneNumber=${search_value}`,
+				dataType: 'json',
+				timeout: 10000
+			}).done(function(data){
+			
+				$.each(data, function(idx, c) {
+					var li = '<li class="list-li"><h3>Address: '+c.address+'</h3>'
+					+  '<p>Vehicle type: '+c.vehicle+'</p>'
+					+  '<p>State: '+c.state+'</p>'
+					+  '<p>Note: '+c.note+'</p></li>';		             
+		            $('#ul-history-list').append(li);
+	          	});
+	          	if (data.length == 0){
+	          		var li = '<li class="list-li"><h3>Not found</h3></li>';		             
+		            $('#ul-history-list').append(li);
+	          	}
+								
+			}).fail(function(jqXHR, textStatus, error){
+				console.log(textStatus);
+				console.log(error);
+				console.log(jqXHR);
+			});
+	}
+</script>
+
+</body>
+</html>
