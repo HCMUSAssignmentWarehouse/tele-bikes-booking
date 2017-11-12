@@ -1,10 +1,14 @@
+//Global variables
 var map;
 var marker;
 
 function initMap() {
+    //Get called after maps finish init
+    var hcmusCamp = {lat: 10.7624949, lng: 106.6773057};
+
     map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: -34.397, lng: 150.644 },
-        zoom: 8,
+        center: hcmusCamp,
+        zoom: 16,
         disableDefaultUI: true
     });
 
@@ -15,12 +19,13 @@ function initMap() {
     {
         position: { lat: -34.397, lng: 150.644 }
     });
-    //goi hàm geocode
+
+    //Call geo coding function
     document.getElementById('submit').addEventListener('click', function() {
         geocodeAddress(geocoder, map, infowindow);
     });
 
-    //lấy tọa độ khi click chuột
+    //Get location on click 
     google.maps.event.addListener(map, 'click', function(event) {
         reverseLocation(event.latLng, reverse, infowindow);
     });
