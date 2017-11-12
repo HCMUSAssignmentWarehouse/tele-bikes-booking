@@ -2,8 +2,6 @@ const express = require('express'),
     morgan = require('morgan'),
     path = require('path');
 
-
-
 var firebase =  require('firebase');
 
 firebase.initializeApp({
@@ -26,14 +24,57 @@ app.get('/', (req, res) => {
 });
 
 app.locals.logined = false;
+app.locals.history_List = [];
+app.locals.selectedIndex = 0;
+
+app.get('/getSelectedIndex', (req, res) => {	
+
+	if (app.locals.logined == true){
+		app.locals.selectedIndex = req.query.index;
+		console.log("app.locals.selectedIndex: "+ app.locals.selectedIndex);
+		let c = {
+            message:"success"
+	    }
+	    res.json(c);
+		
+	}else{
+		let c = {
+            message:"fail"
+	    }
+	    res.json(c);
+	}
+});
+
+app.get('/callDriver', (req, res) => {	
+
+	if (app.locals.logined == true){
+		var selectedHistory = app.locals.history_List[app.locals.selectedIndex];
+
+		console.log("app.locals.history_List.length: " + app.locals.history_List.length);
+		console.log("app.locals.selectedIndex: "+ app.locals.selectedIndex);
+
+		writeNewPostWithLatLong(selectedHistory.phoneNumber,selectedHistory.address,selectedHistory.lat, selectedHistory.long,selectedHistory.vehicle,"finding",selectedHistory.note);
+
+		let c = {
+            message:"success"
+	    }
+	    res.json(c);
+		
+	}else{
+		let c = {
+            message:"fail"
+	    }
+	    res.json(c);
+	} 
+});
 
 app.get('/history', (req, res) => {	
 
 	if (app.locals.logined == true){
 		var phoneNumber = req.query.phoneNumber;
 		console.log("sdt:"+ phoneNumber);
-
-		var history_List = [];
+		app.locals.history_List = [];
+		
 		var ref = firebase.database().ref();
 
 		ref.child("book-list").on("value", function(snapshot) {
@@ -41,27 +82,22 @@ app.get('/history', (req, res) => {
 		   		console.log(book.val().phoneNumber);
 
 		   		if (book.val().phoneNumber == phoneNumber){
-		   			console.log("tim thay");
-		   			history_List.push(book.val());
+		   			app.locals.history_List.push(book.val());
 		   		}
 		   });
-		   res.json(history_List);
+		   res.json(app.locals.history_List);
 
 		}, function (error) {
 		   console.log("Error: " + error.code);
-		   res.json(history_List);
+		   res.json(app.locals.history_List);
 
 		});
 	}else{
 		res.sendFile('login.html', {
         	root: __dirname
     	});
-	}
-
-	
-    
+	}    
 });
-
 
 app.get('/verifyLogin',(req,res)=>{
 	var _email = req.query.email;
@@ -77,7 +113,6 @@ app.get('/verifyLogin',(req,res)=>{
         }
         res.statusCode = 201;
         res.json(c);
-
 	}).catch(function(error) {
 		  // Handle Errors here.
 		  errorCode = error.code;
@@ -140,15 +175,12 @@ app.get('/verifySignUp',(req,res)=>{
 	}			
 });
 
-
-
 app.get('/login', (req, res) => {	
 
     res.sendFile('login.html', {
         root: __dirname
     });
 });
-
 
 app.get('/signup', (req, res) => {
 
@@ -157,14 +189,12 @@ app.get('/signup', (req, res) => {
     });
 });
 
-
 app.get('/forgot_password', (req, res) => {
 
     res.sendFile('forgot_password.html', {
         root: __dirname
     });
 });
-
 
 app.get('/process', (req, res) => {
 
@@ -178,10 +208,7 @@ app.get('/process', (req, res) => {
         	root: __dirname
     	});
 	}
-
-	
 });
-
 
 app.get('/addNewBookingDeal', (req, res) => {
 
@@ -212,7 +239,6 @@ app.get('/addNewBookingDeal', (req, res) => {
         	root: __dirname
     	});
 	}
-
 });
 
 app.get('/veryfiUpdatePassword', (req, res) => {
@@ -233,9 +259,7 @@ app.get('/veryfiUpdatePassword', (req, res) => {
 		 res.statusCode = 201;
 		 res.json(c);
 	});
-
 });
-
 
 app.get('/logout', (req, res) => {
 	firebase.auth().signOut().then(function() {
@@ -244,18 +268,14 @@ app.get('/logout', (req, res) => {
   		let c = {
 	            message:"success"
 		 }
-		 res.statusCode = 201;
 		 res.json(c);
 	}).catch(function(error) {
 	  // An error happened.
 	   let c = {
 	            message:error.message
 		 }
-		 res.statusCode = 201;
 		 res.json(c);
 	});
-
-
 });
 
 function writeNewPost(_phoneNumber,_address,_vehicleType, _state,_note) {
@@ -270,17 +290,41 @@ function writeNewPost(_phoneNumber,_address,_vehicleType, _state,_note) {
 	    note: _note
 	  };
 
-console.log("new key");
-  // Get a key for a new Post.
-  var newPostKey = firebase.database().ref().child('book-list').push().key;
+	console.log("new key");
+	  // Get a key for a new Post.
+	var newPostKey = firebase.database().ref().child('book-list').push().key;
 
-  // Write the new post's data simultaneously in the posts list and the user's post list.
-  var updates = {};
-  updates['/book-list/' + newPostKey] = postData;
-  console.log("update");
-  return firebase.database().ref().update(updates);
+	  // Write the new post's data simultaneously in the posts list and the user's post list.
+	var updates = {};
+	updates['/book-list/' + newPostKey] = postData;
+	console.log("update");
+	firebase.database().ref().update(updates);	
 }
 
+function writeNewPostWithLatLong(_phoneNumber,_address,_lat, _long,_vehicleType, _state,_note) {
+
+	console.log("entry");
+  // A post entry.
+	  var postData = {
+	  	phoneNumber: _phoneNumber,
+	    address: _address,
+	    lat: _lat,
+	    long:  _long,
+	    vehicle: _vehicleType,
+	    state: _state,
+	    note: _note
+	  };
+
+	console.log("new key");
+	  // Get a key for a new Post.
+	  var newPostKey = firebase.database().ref().child('book-list').push().key;
+
+	  // Write the new post's data simultaneously in the posts list and the user's post list.
+	  var updates = {};
+	  updates['/book-list/' + newPostKey] = postData;
+	  console.log("update");
+	  firebase.database().ref().update(updates);
+}
 
 const PORT = 3000;
 app.listen(PORT, () => {

@@ -26,14 +26,13 @@
 </div>
 
 <div id="new-book-deals-layout">
-	<div class="form-style-9">
+	<div class="form-style-9" id="booking-deal-form" >
 
 		<h1>New booking deal</h1>
 
 		<ul>
 		<li>
 		    <input type="text" id="phoneNumber" name="field1" class="field-style field-full align-none" placeholder="Phone number" />
-
 		</li>
 		<li>
 		    <input type="text" id="address" name="field3" class="field-style field-full align-none" placeholder="Address" />
@@ -49,10 +48,56 @@
 		</li>
 		</ul>
 	</div>
+
+
+	<input type="button" value="< Back to new booking deal form" id="backButton" onclick="backToNewForm()" />
+
+	<div class="form-style-9" id="detail-layout" style="display: none;">
+
+		
+		
+		<h1>Detail booking deal</h1>
+		<div id="detail" ></div>
+
+		<ul>
+			<li>
+			<input type="button" value="Book" onclick="callDriver()" />
+			</li>
+		</ul>
+		
+	</div>
+
 </div>
 
 <script src="/assests/jquery-3.1.1.min.js"></script>
 
+<script type="text/javascript">
+	function callDriver(){
+		var divTag = document.getElementById("detail");
+		var count = divTag.childElementCount;
+		if (count < 6){
+			alert("Wait Location app to find location of thi address!");
+		}else{
+
+			$.ajax({
+				url: `http://localhost:3000/callDriver`,
+				dataType: 'json',
+				timeout: 10000
+			}).done(function(data){
+				if (data.message == 'success'){
+					alert("Success, finding driver!");
+				}else{
+					alert(data.message);
+				}				
+			}).fail(function(jqXHR, textStatus, error){
+				alert(error);
+				console.log(textStatus);
+				console.log(error);
+				console.log(jqXHR);
+			});
+		}
+	}
+</script>
 
 <script type="text/javascript">
 
@@ -63,40 +108,39 @@
 			var vehicleType = document.getElementById("vehicleType").value;
 			var note = document.getElementById("note").value;
 
-			$.ajax({
-				url: `http://localhost:3000/addNewBookingDeal?phoneNumber=${phoneNumber}&address=${address}&vehicleType=${vehicleType}&note=${note}`,
-				dataType: 'json',
-				contentType: 'application/json',
-				timeout: 10000
-			}).done(function(data){
-				if (data.message == 'success'){
-					alert("Add booking deadl success!");
-					document.getElementById("phoneNumber").value = "";
-					document.getElementById("address").value = "";
-					document.getElementById("vehicleType").value = "";
-					document.getElementById("note").value = "";
-				}else{
-					alert(data.message);
-				}	
-			
-			}).fail(function(jqXHR, textStatus, error){
-				alert(error);
-				console.log(textStatus);
-				console.log(error);
-				console.log(jqXHR);
-			});
-
-
+			if (phoneNumber != "" && address != "" && vehicleType != ""){
+				$.ajax({
+					url: `http://localhost:3000/addNewBookingDeal?phoneNumber=${phoneNumber}&address=${address}&vehicleType=${vehicleType}&note=${note}`,
+					dataType: 'json',
+					contentType: 'application/json',
+					timeout: 10000
+				}).done(function(data){
+					if (data.message == 'success'){
+						alert("Add booking deadl success!");
+						document.getElementById("phoneNumber").value = "";
+						document.getElementById("address").value = "";
+						document.getElementById("vehicleType").value = "";
+						document.getElementById("note").value = "";
+					}else{
+						alert(data.message);
+					}	
+				
+				}).fail(function(jqXHR, textStatus, error){
+					alert(error);
+					console.log(textStatus);
+					console.log(error);
+					console.log(jqXHR);
+				});
+			}else{
+				alert("Data is not empty!");
+			}
 		}
 
-		
 	</script> 
 
 
 <script type="text/javascript">
 	function logout(){
-
-
 		$.ajax({
 				url: `http://localhost:3000/logout`,
 				dataType: 'json',
@@ -105,7 +149,7 @@
 				if (data.message == 'success'){
 					window.location = `./login`;
 				}else{
-					alert(data.message);
+					alert("fail: "+ data.message);
 				}				
 			}).fail(function(jqXHR, textStatus, error){
 				alert(error);
@@ -128,10 +172,17 @@
 			}).done(function(data){
 			
 				$.each(data, function(idx, c) {
-					var li = '<li class="list-li"><h3>Address: '+c.address+'</h3>'
-					+  '<p>Vehicle type: '+c.vehicle+'</p>'
+					var li = '<li class="list-li" onclick="getDetail(this)"><h3>Address: '+c.address+'</h3>';
+					if (c.lat != null){
+						li += '<p>Lat: '+c.lat+'</p>';
+					}
+					if (c.long != null){
+						li += '<p>Long: '+c.long+'</p>';
+					}
+					li += '<p>Vehicle type: '+c.vehicle+'</p>'
 					+  '<p>State: '+c.state+'</p>'
-					+  '<p>Note: '+c.note+'</p></li>';		             
+					+  '<p>Note: '+c.note+'</p></li>';	
+
 		            $('#ul-history-list').append(li);
 	          	});
 	          	if (data.length == 0){
@@ -146,6 +197,45 @@
 			});
 	}
 </script>
+
+<script type="text/javascript">
+	function backToNewForm(){
+		document.getElementById("booking-deal-form").style.display = "block";
+		document.getElementById("detail-layout").style.display = "none";
+		document.getElementById("backButton").style.display = "none";
+
+	}
+</script>
+
+<script type="text/javascript">
+
+	function getDetail(event){
+		//alert(event.innerHTML);
+
+		document.getElementById("booking-deal-form").style.display = "none";
+		document.getElementById("detail-layout").style.display = "block";
+		document.getElementById("backButton").style.display = "block";
+
+		var i = 0 ;
+		var childs = event.parentNode.childNodes;
+		  for (; i < childs.length; i++) {
+		    if (event == childs[i]) break;
+		  }
+		$("#detail").empty();
+		$("#detail").append(event.innerHTML);
+		$.ajax({
+			url: `http://localhost:3000/getSelectedIndex?index=${i}`,
+			dataType: 'json',
+			timeout: 10000
+		}).done(function(data){
+		}).fail(function(jqXHR, textStatus, error){
+			console.log(textStatus);
+			console.log(error);
+			console.log(jqXHR);
+		});
+	}
+</script>
+
 
 </body>
 </html>
