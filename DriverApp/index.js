@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 app.use(express.static(__dirname + '/public'));
 
+
 var firebase =  require('firebase');
 app.locals.logined = false;
 
@@ -39,6 +40,35 @@ app.get('/', (req, res) => {
 	}
 });
 
+app.locals.history_List = [];
+
+app.get('/waiting-booking-deal', (req, res) => {	
+
+	if (app.locals.logined == true){
+		app.locals.history_List = [];
+		
+		var ref = firebase.database().ref();
+
+		ref.child("book-list").on("value", function(snapshot) {
+		   snapshot.forEach(book => {
+
+		   		if (book.val().state == "finding"){
+		   			app.locals.history_List.push(book.val());
+		   		}
+		   });
+		   res.json(app.locals.history_List);
+
+		}, function (error) {
+		   console.log("Error: " + error.code);
+		   res.json(app.locals.history_List);
+
+		});
+	}else{
+		res.sendFile('login.html', {
+        	root: __dirname
+    	});
+	}    
+});
 
 app.get('/verifyLogin',(req,res)=>{
 	var _email = req.query.email;
@@ -158,7 +188,6 @@ app.get('/forgot_password', (req, res) => {
     });
 });
 
-
 app.get('/logout', (req, res) => {
 	firebase.auth().signOut().then(function() {
   		// Sign-out successful.
@@ -177,7 +206,8 @@ app.get('/logout', (req, res) => {
 });
 
 
-const PORT = 3001;
+
+const PORT = 3002;
 app.listen(PORT, () => {
     console.log('api run on port: ' + PORT);
 });

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Driver</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+
+<div>
+  <ul id="ul-list">
+    
+  </ul>
+</div>
+
+<script src="js/jquery.min.js"></script>
+
+<script type="text/javascript">
+	$(function() {
+		$.ajax({
+				url: `http://localhost:3002/waiting-booking-deal`,
+				dataType: 'json',
+				timeout: 10000
+			}).done(function(data){
+			
+				$.each(data, function(idx, c) {
+					var li = '<li class="list-li" onclick="getDetail(this)"><img src="images/new-icon.png"/><h3>Address: '+c.address+'</h3>'+ '<p>Lat: '+c.lat+'</p>'+'<p>Long: '+c.long+'</p>'+ '<p>Vehicle type: '+c.vehicle+'</p>'
+					+  '<p>State: '+c.state+'</p>'
+					+  '<p>Note: '+c.note+'</p></li>';	
+
+		            $('#ul-list').append(li);
+	          	});
+	          				
+			}).fail(function(jqXHR, textStatus, error){
+				console.log(textStatus);
+				console.log(error);
+				console.log(jqXHR);
+			});
+	});
+</script>
+
+</body>
+</html>
