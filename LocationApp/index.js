@@ -1,38 +1,71 @@
 var express = require('express');
+var firebase =  require('firebase');
+
+
 var app = express();
+
+
 app.use(express.static(__dirname + '/public'));
 
-var firebase =  require('firebase');
-app.locals.logined = false;
 
-firebase.initializeApp({
-    	apiKey: "AIzaSyCPsM92WXpL9n_APrHNbO0CtkT_FbAcuBY",
+// Initialize Firebase
+// TODO: Replace with your project's customized code snippet
+var config = {
+  apiKey: "AIzaSyCPsM92WXpL9n_APrHNbO0CtkT_FbAcuBY",
 	    authDomain: "barg-midterm.firebaseapp.com",
 	    databaseURL: "https://barg-midterm.firebaseio.com",
 	    projectId: "barg-midterm",
 	    storageBucket: "barg-midterm.appspot.com",
 	    messagingSenderId: "263139149669"
-}); 
+};
+var defaultApp = firebase.initializeApp(config);
+var defaultAuth = firebase.auth();
+// retrieve services via the defaultApp variable
+var defaultDatabase = defaultApp.database();
+var defaultDatabaseRef = defaultDatabase.ref();
 
 app.get('/index', (req, res) => {
-	if (app.locals.logined == true){
-			 res.sendFile('index.html', {
-	        root: __dirname
+	if (defaultAuth.currentUser) {
+    	// User is signed in.
+    	res.sendFile('index.html', {
+        	root: __dirname
     	});
-	}else{
+    	
+    	return defaultDatabaseRef.child('book-list')
+		.once('value')
+		.then(function(snapshot) {
+		  var val = snapshot.val();
+		  console.log(val);
+		})
+		.catch(function(error) {
+			//TODO: Send error pages
+	    	console.error("Error: ", error);
+		});
+	} else{
 		 res.sendFile('login.html', {
 	        root: __dirname
 	    });
 	}
-   
 });
 
 app.get('/', (req, res) => {
-    if (app.locals.logined == true){
-		 res.sendFile('index.html', {
+    if (defaultAuth.currentUser) {
+    	// User is signed in.
+    	res.sendFile('index.html', {
         	root: __dirname
     	});
-	}else{
+    	
+    	return defaultDatabaseRef.child('book-list')
+		.once('value')
+		.then(function(snapshot) {
+		  var val = snapshot.val();
+		  console.log(val);
+		})
+		.catch(function(error) {
+			//TODO: Send error pages
+	    	console.error("Error: ", error);
+		});
+	} else{
 		 res.sendFile('login.html', {
 	        root: __dirname
 	    });
@@ -46,10 +79,9 @@ app.get('/verifyLogin',(req,res)=>{
 	
 	if (_email != null && _password != null){
 		var errorCode;
-		firebase.auth().signInWithEmailAndPassword(_email, _password).then(function(user) {
+		defaultAuth.signInWithEmailAndPassword(_email, _password).then(function(user) {
 		console.log("sucess!");
-		app.locals.logined = true;
-		 let c = {
+		let c = {
             message:'success'
         }
         res.statusCode = 201;
@@ -83,7 +115,7 @@ app.get('/verifySignUp',(req,res)=>{
 	console.log("zo verify");
 
 	if (_email != null && _password != null){
-			firebase.auth().createUserWithEmailAndPassword(_email, _password).then(function(user) {
+			defaultAuth.createUserWithEmailAndPassword(_email, _password).then(function(user) {
 			
 			console.log("sucess!");
 			 let c = {
@@ -117,14 +149,12 @@ app.get('/verifySignUp',(req,res)=>{
 });
 
 app.get('/login', (req, res) => {	
-
     res.sendFile('login.html', {
         root: __dirname
     });
 });
 
 app.get('/signup', (req, res) => {
-
     res.sendFile('signup.html', {
         root: __dirname
     });
@@ -132,10 +162,8 @@ app.get('/signup', (req, res) => {
 
 app.get('/veryfiUpdatePassword', (req, res) => {
 	var email = req.query.email;
-	var auth = firebase.auth();
-
-
-	auth.sendPasswordResetEmail(email).then(function() {
+	
+	defaultAuth.sendPasswordResetEmail(email).then(function() {
 	  let c = {
 	            message:"success"
 		 }
@@ -152,7 +180,6 @@ app.get('/veryfiUpdatePassword', (req, res) => {
 
 
 app.get('/forgot_password', (req, res) => {
-
     res.sendFile('forgot_password.html', {
         root: __dirname
     });
@@ -160,13 +187,12 @@ app.get('/forgot_password', (req, res) => {
 
 
 app.get('/logout', (req, res) => {
-	firebase.auth().signOut().then(function() {
+	defaultAuth.signOut().then(function() {
   		// Sign-out successful.
-  		app.locals.logined = false;
   		let c = {
 	            message:"success"
-		 }
-		 res.json(c);
+		}
+		res.json(c);
 	}).catch(function(error) {
 	  // An error happened.
 	   let c = {
