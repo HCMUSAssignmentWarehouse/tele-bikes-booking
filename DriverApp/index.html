@@ -3,6 +3,19 @@
 <head>
 	<title>Driver</title>
 	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
+	<script>
+	  // Initialize Firebase
+	  var config = {
+	    apiKey: "AIzaSyCPsM92WXpL9n_APrHNbO0CtkT_FbAcuBY",
+	    authDomain: "barg-midterm.firebaseapp.com",
+	    databaseURL: "https://barg-midterm.firebaseio.com",
+	    projectId: "barg-midterm",
+	    storageBucket: "barg-midterm.appspot.com",
+	    messagingSenderId: "263139149669"
+	  };
+	  firebase.initializeApp(config);
+	</script>
 </head>
 <body>
 
@@ -14,6 +27,73 @@
 
 <script src="js/jquery.min.js"></script>
 
+<!-- <script type="text/javascript">
+	$(function() {
+		$.ajax({
+				url: `http://localhost:3002/push-new-booking-deal`,
+				dataType: 'json',
+				timeout: 10000
+			}).done(function(data){
+			
+				if (data != null){
+					alert(data.address);
+				}else{
+					alert("no data");
+				}
+	          				
+			}).fail(function(jqXHR, textStatus, error){
+				console.log(textStatus);
+				console.log(error);
+				console.log(jqXHR);
+			});
+	});
+</script>
+ -->
+ <script type="text/javascript">
+ 	
+ // 	var defaultDatabase = this.database();
+	// var defaultDatabaseRef = defaultDatabase.ref();
+
+ // 	var ref = defaultDatabaseRef;
+	// var newBookingDeal = null;
+
+	// 	// ref.child("book-list").on('value', function(book) {
+	// 	// 	//if (book.val().state == "finding"){
+	// 	//    			newBookingDeal = book.val();
+	// 	//    			alert("change");
+	// 	//    	//}
+	// 	//    	//res.json(newBookingDeal);
+	// 	// });
+
+
+	// 	ref.child("book-list").once("value", function(snapshot) {
+	// 	   snapshot.forEach(book => {
+
+	// 	   		// if (book.val().state == "finding"){
+	// 	   		// 	app.locals.history_List.push(book.val());
+	// 	   		// }
+	// 	   		alert(book.val().address);
+	// 	   });
+	// 	});
+	// 	  // ref.child("book-list").off();
+	// 	   //res.json(app.locals.history_List);
+
+	 // Reference to the /messages/ database path.
+	  var database = firebase.database();
+    var messagesRef = database.ref('book-list');
+    // Make sure we remove all previous listeners.
+    messagesRef.off();
+
+    alert("zo");
+    // Loads the last 12 messages and listen for new ones.
+    var setMessage = function (data) {
+        var val = data.val();
+        alert("zo2");
+    }.bind(this);
+    messagesRef.limitToLast(12).on('value', setMessage);
+    messagesRef.limitToLast(12).on('child_changed', setMessage);
+
+ </script>
 <script type="text/javascript">
 	$(function() {
 		$.ajax({

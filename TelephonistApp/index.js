@@ -13,9 +13,14 @@ firebase.initializeApp({
 	    messagingSenderId: "263139149669"
 }); 
 
+
 var app = express();
 app.use(express.static(__dirname + '/public'));
 
+
+var defaultDatabase = firebase.database();
+var defaultDatabaseRef = defaultDatabase.ref();
+var defaultAuth = firebase.auth();
 
 app.get('/', (req, res) => {
     res.sendFile('index.html', {
@@ -75,9 +80,9 @@ app.get('/history', (req, res) => {
 		console.log("sdt:"+ phoneNumber);
 		app.locals.history_List = [];
 		
-		var ref = firebase.database().ref();
+		var ref = defaultDatabaseRef;
 
-		ref.child("book-list").on("value", function(snapshot) {
+		ref.child("book-list").once("value", function(snapshot) {
 		   snapshot.forEach(book => {
 		   		console.log(book.val().phoneNumber);
 
@@ -85,6 +90,8 @@ app.get('/history', (req, res) => {
 		   			app.locals.history_List.push(book.val());
 		   		}
 		   });
+
+		   ref.child("book-list").off();
 		   res.json(app.locals.history_List);
 
 		}, function (error) {
@@ -105,7 +112,7 @@ app.get('/verifyLogin',(req,res)=>{
 	
 	if (_email != null && _password != null){
 		var errorCode;
-		firebase.auth().signInWithEmailAndPassword(_email, _password).then(function(user) {
+		defaultAuth.signInWithEmailAndPassword(_email, _password).then(function(user) {
 		console.log("sucess!");
 		app.locals.logined = true;
 		 let c = {
@@ -142,7 +149,7 @@ app.get('/verifySignUp',(req,res)=>{
 	console.log("zo verify");
 
 	if (_email != null && _password != null){
-			firebase.auth().createUserWithEmailAndPassword(_email, _password).then(function(user) {
+			defaultAuth.createUserWithEmailAndPassword(_email, _password).then(function(user) {
 			
 			console.log("sucess!");
 			 let c = {
@@ -243,7 +250,7 @@ app.get('/addNewBookingDeal', (req, res) => {
 
 app.get('/veryfiUpdatePassword', (req, res) => {
 	var email = req.query.email;
-	var auth = firebase.auth();
+	var auth = defaultAuth;
 
 
 	auth.sendPasswordResetEmail(email).then(function() {
@@ -262,7 +269,7 @@ app.get('/veryfiUpdatePassword', (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-	firebase.auth().signOut().then(function() {
+	defaultAuth.signOut().then(function() {
   		// Sign-out successful.
   		app.locals.logined = false;
   		let c = {
@@ -292,13 +299,13 @@ function writeNewPost(_phoneNumber,_address,_vehicleType, _state,_note) {
 
 	console.log("new key");
 	  // Get a key for a new Post.
-	var newPostKey = firebase.database().ref().child('book-list').push().key;
+	var newPostKey = defaultDatabaseRef.child('book-list').push().key;
 
 	  // Write the new post's data simultaneously in the posts list and the user's post list.
 	var updates = {};
 	updates['/book-list/' + newPostKey] = postData;
 	console.log("update");
-	firebase.database().ref().update(updates);	
+	defaultDatabaseRef.update(updates);	
 }
 
 function writeNewPostWithLatLong(_phoneNumber,_address,_lat, _long,_vehicleType, _state,_note) {
@@ -317,13 +324,13 @@ function writeNewPostWithLatLong(_phoneNumber,_address,_lat, _long,_vehicleType,
 
 	console.log("new key");
 	  // Get a key for a new Post.
-	  var newPostKey = firebase.database().ref().child('book-list').push().key;
+	  var newPostKey = defaultDatabaseRef.child('book-list').push().key;
 
 	  // Write the new post's data simultaneously in the posts list and the user's post list.
 	  var updates = {};
 	  updates['/book-list/' + newPostKey] = postData;
 	  console.log("update");
-	  firebase.database().ref().update(updates);
+	 defaultDatabaseRef.update(updates);
 }
 
 const PORT = 3000;

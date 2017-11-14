@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Driver</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
+	<script>
+	  // Initialize Firebase
+	  var config = {
+	    apiKey: "AIzaSyCPsM92WXpL9n_APrHNbO0CtkT_FbAcuBY",
+	    authDomain: "barg-midterm.firebaseapp.com",
+	    databaseURL: "https://barg-midterm.firebaseio.com",
+	    projectId: "barg-midterm",
+	    storageBucket: "barg-midterm.appspot.com",
+	    messagingSenderId: "263139149669"
+	  };
+	  firebase.initializeApp(config);
+	</script>
+</head>
+<body>
+
+<div>
+  <ul id="ul-list">
+    
+  </ul>
+</div>
+
+ <div id="map"></div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAM0uiCd8v3-ef9qhPzZuOgWTPZON_SZvM&callback=initMap" async defer></script>
+    <script src="js/map.js"></script>
+
+<script src="js/jquery.min.js"></script>
+ 
+<script type="text/javascript">
+	$(function() {
+		$.ajax({
+				url: `http://localhost:3003/waiting-booking-deal`,
+				dataType: 'json',
+				timeout: 10000
+			}).done(function(data){
+			
+				$.each(data, function(idx, c) {
+					var li = '<li class="list-li" onclick="getDetail(this)"><img src="images/point-icon.png"/><h3>Address: '+c.address+'</h3>'+ '<p>Lat: '+c.lat+'</p>'+'<p>Long: '+c.long+'</p>'+ '<p>Vehicle type: '+c.vehicle+'</p>'
+					+  '<p>State: '+c.state+'</p>'
+					+  '<p>Note: '+c.note+'</p></li>';	
+
+		            $('#ul-list').append(li);
+	          	});
+	          				
+			}).fail(function(jqXHR, textStatus, error){
+				console.log(textStatus);
+				console.log(error);
+				console.log(jqXHR);
+			});
+	});
+</script>
+
+</body>
+</html>

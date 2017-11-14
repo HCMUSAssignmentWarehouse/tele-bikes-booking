@@ -46,18 +46,6 @@ app.get('/', (req, res) => {
 
 app.locals.history_List = [];
 
-app.get('/push-new-booking-deal',(req,res) =>{
-
-	var ref = defaultDatabaseRef;
-	var newBookingDeal = null;
-
-		ref.child("book-list").on('child_added', function(book) {
-			//if (book.val().state == "finding"){
-		   			newBookingDeal = book.val();
-		   	//}
-		   	res.json(newBookingDeal);
-		});
-});
 
 app.get('/waiting-booking-deal', (req, res) => {	
 
@@ -228,7 +216,7 @@ app.get('/logout', (req, res) => {
 
 
 
-const PORT = 3002;
+const PORT = 3003;
 app.listen(PORT, () => {
     console.log('api run on port: ' + PORT);
 });
