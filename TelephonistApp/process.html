@@ -172,7 +172,7 @@
 			}).done(function(data){
 			
 				$.each(data, function(idx, c) {
-					var li = '<li class="list-li" onclick="getDetail(this)"><h3>Address: '+c.address+'</h3>';
+					var li = '<li class="list-li"><h3>Address: '+c.address+'</h3>';
 					if (c.lat != null){
 						li += '<p>Lat: '+c.lat+'</p>';
 					}
@@ -184,6 +184,9 @@
 					+  '<p>Note: '+c.note+'</p></li>';	
 
 		            $('#ul-history-list').append(li);
+		            $('#ul-history-list').on('click', 'li', function() {
+		            		getDetail($(this)[0]);
+		            });
 	          	});
 	          	if (data.length == 0){
 	          		var li = '<li class="list-li"><h3>Not found</h3></li>';		             
