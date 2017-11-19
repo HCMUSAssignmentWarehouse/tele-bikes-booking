@@ -4,20 +4,20 @@ body{
   background-color: #7FB3D5;
 }
 
-div {
-  margin: 20px;
-}
  
 ul {
   list-style-type: none;
-  width: 500px;
-  height: 600px;
+  position: absolute;
+
+  width: 35%;
+  float: left;
+  height: 700px;
   overflow: auto;
 }
  
 h3 {
   color: white;
-  font: bold 20px/1.5 Helvetica, Verdana, sans-serif;
+  font: bold 16px/1.5 Helvetica, Verdana, sans-serif;
 }
 
  
@@ -44,3 +44,31 @@ li:hover {
   background: #633974;
   cursor: pointer;
 }
+
+.highlight_stay{
+    background:#633974;
+}
+#map {
+        height: 100%;
+        width: 65%;
+        float: right;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }

@@ -23,6 +23,16 @@ var defaultDatabaseRef = defaultDatabase.ref();
 var defaultAuth = firebase.auth();
 
 app.get('/', (req, res) => {
+	writeOneDriver("01649209301","Đường số 8, Linh Trung, Thủ Đức, Linh Trung, Việt Nam","Võ Yến Nhi");
+	writeOneDriver("01633909021","2 Lê Văn Chí, Linh Trung, Hồ Chí Minh, Việt Nam","Đoàn Huệ");
+	writeOneDriver("01660902930","so 9, Xa lộ Hà Nội, Hiệp Phú, Quận 9, Hồ Chí Minh, Việt Nam","Lê Thị Ý Nhi");
+	writeOneDriver("01679892392","48 Lê Văn Chí, Linh Trung, Thủ Đức, Hồ Chí Minh, Việt Nam","Cao Ý Ly");
+	writeOneDriver("01689203909","Suối Tiên - Biển Tiên Đồng - Ngọc Nữ","Nguyễn Thanh Long");
+	writeOneDriver("01690023345","Trường Đại học Công nghệ Thông tin","Miu Lê");
+	writeOneDriver("01664342321","Trường Đại học Khoa học Xã hội và Nhân văn (cơ sở 2)- Đại học Quốc gia TP. HCM","Vương Anh Tú");
+	writeOneDriver("01689090900","Trung tâm Huấn luyện Thể Thao Quốc Gia II","Nguyễn Công Thành");
+	writeOneDriver("09989822324","Thư viện Trung tâm ĐHQG - HCM","Nguyễn Thanh Hà");
+	writeOneDriver("09528502814","Trường đại học Nông Lâm Thành phố Hồ Chí Minh","Lê Thị Mai Anh");
     res.sendFile('index.html', {
         root: __dirname
     });
@@ -332,6 +342,29 @@ function writeNewPostWithLatLong(_phoneNumber,_address,_lat, _long,_vehicleType,
 	  console.log("update");
 	 defaultDatabaseRef.update(updates);
 }
+
+
+function writeOneDriver(_phoneNumber,_address,_name) {
+
+	console.log("entry");
+  // A post entry.
+	  var postData = {
+	  	driverPhone: _phoneNumber,
+	    driverAddress: _address,
+	    driverName: _name
+	  };
+
+	  // Get a key for a new Post.
+	  var newPostKey = defaultDatabaseRef.child('driver-list').push().key;
+
+	  // Write the new post's data simultaneously in the posts list and the user's post list.
+	  var updates = {};
+	  updates['/driver-list/' + newPostKey] = postData;
+	  console.log("update");
+	 defaultDatabaseRef.update(updates);
+}
+
+
 
 const PORT = 3000;
 app.listen(PORT, () => {

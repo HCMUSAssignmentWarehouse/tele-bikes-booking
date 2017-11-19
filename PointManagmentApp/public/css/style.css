@@ -4,9 +4,6 @@ body{
   background-color: #7FB3D5;
 }
 
-div {
-  margin: 20px;
-}
  
 ul {
   list-style-type: none;
@@ -14,13 +11,13 @@ ul {
 
   width: 35%;
   float: left;
-  height: 600px;
+  height: 700px;
   overflow: auto;
 }
  
 h3 {
   color: white;
-  font: bold 20px/1.5 Helvetica, Verdana, sans-serif;
+  font: bold 16px/1.5 Helvetica, Verdana, sans-serif;
 }
 
  
@@ -48,19 +45,21 @@ li:hover {
   cursor: pointer;
 }
 
+.highlight_stay{
+    background:#633974;
+}
 #map {
         height: 100%;
-        width: 60%;
+        width: 65%;
         float: right;
       }
       /* Optional: Makes the sample page fill the window. */
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-#floating-panel {
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #floating-panel {
         position: absolute;
         top: 10px;
         left: 25%;
@@ -72,4 +71,4 @@ html, body {
         font-family: 'Roboto','sans-serif';
         line-height: 30px;
         padding-left: 10px;
-}
+      }

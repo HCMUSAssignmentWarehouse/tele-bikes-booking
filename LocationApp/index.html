@@ -5,17 +5,61 @@
     <title>Simple Map</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
+     
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
-    <div id="floating-panel">
+    <div class="floating-panel">
         <input id="address" type="textbox" value="Hồ Chí Minh">
         <input id="submit" type="submit" value="Geocode">
     </div>
+
     <div id="map"></div>
+
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAM0uiCd8v3-ef9qhPzZuOgWTPZON_SZvM&callback=initMap" async defer></script>
     <script src="js/map.js"></script>
+
+    <script src="/assests/jquery-3.1.1.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyCPsM92WXpL9n_APrHNbO0CtkT_FbAcuBY",
+            authDomain: "barg-midterm.firebaseapp.com",
+            databaseURL: "https://barg-midterm.firebaseio.com",
+            projectId: "barg-midterm",
+            storageBucket: "barg-midterm.appspot.com",
+            messagingSenderId: "263139149669"
+        };
+        firebase.initializeApp(config);
+        
+    </script>
+    <script type="text/javascript">
+
+            var isbusy = false;
+
+            var database = firebase.database().ref('book-list');
+
+            var setAddedMessage = function (data) {
+                var val = data.val();
+
+                if (isbusy == false && val.state == "not location"){
+                    var message = "New book deal: "+ val.address;
+                    if (confirm(message)) {
+                    // Save it!
+                        isbusy = true;
+                    } else {
+                        // Do nothing!
+                    }
+                }
+                
+            }
+
+            database.on('child_added',setAddedMessage);
+    </script>
+
 </body>
 
 </html>

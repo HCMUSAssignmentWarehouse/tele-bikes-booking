@@ -8,7 +8,7 @@ html, body {
   padding: 0;
 }
 
-#floating-panel {
+.floating-panel {
         position: absolute;
         top: 10px;
         left: 25%;

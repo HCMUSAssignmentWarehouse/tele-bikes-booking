@@ -45,38 +45,63 @@ app.get('/', (req, res) => {
 });
 
 app.locals.history_List = [];
+app.locals.selectedIndex = 0;
 
+// app.get('/getSelectedIndex', (req, res) => {	
 
-app.get('/waiting-booking-deal', (req, res) => {	
-
-	if (app.locals.logined == true){
-		app.locals.history_List = [];
+// 	if (app.locals.logined == true){
+// 		app.locals.selectedIndex = req.query.index;
+// 		console.log("app.locals.selectedIndex: "+ app.locals.selectedIndex);
+// 		var selectedItem = app.locals.history_List[app.locals.selectedIndex]
+// 	    res.json(selectedItem);
 		
-		var ref = defaultDatabaseRef;
+// 	}else{
+// 		let c = {
+//             message:"fail"
+// 	    }
+// 	    res.json(c);
+// 	}
+// });
 
 
-		ref.child("book-list").once("value", function(snapshot) {
-		   snapshot.forEach(book => {
-
-		   		if (book.val().state == "finding"){
-		   			app.locals.history_List.push(book.val());
-		   		}
-		   });
-		   ref.child("book-list").off();
-		   res.json(app.locals.history_List);
-
-		}, function (error) {
-			ref.child("book-list").off();
-		   console.log("Error: " + error.code);
-		   res.json(app.locals.history_List);
-
+app.get('/test',(req,res)=>{
+	var ref = defaultDatabase;
+		ref.ref("book-list").on("child_added", function(snapshot) {
+			console.log("zo");
+		   console.log(snapshot.val().address);
 		});
-	}else{
 		res.sendFile('login.html', {
-        	root: __dirname
-    	});
-	}    
+	        root: __dirname
+	    });
 });
+
+// app.get('/booking-deals', (req, res) => {	
+
+// 	if (app.locals.logined == true){
+// 		app.locals.history_List = [];
+		
+// 		var ref = defaultDatabaseRef;
+
+
+// 		ref.child("book-list").once("value", function(snapshot) {
+// 		   snapshot.forEach(book => {
+// 		   		app.locals.history_List.push(book.val());
+// 		   });
+// 		   ref.child("book-list").off();
+// 		   res.json(app.locals.history_List);
+
+// 		}, function (error) {
+// 			ref.child("book-list").off();
+// 		   console.log("Error: " + error.code);
+// 		   res.json(app.locals.history_List);
+
+// 		});
+// 	}else{
+// 		res.sendFile('login.html', {
+//         	root: __dirname
+//     	});
+// 	}    
+// });
 
 app.get('/verifyLogin',(req,res)=>{
 	var _email = req.query.email;
@@ -117,8 +142,6 @@ app.get('/verifyLogin',(req,res)=>{
 app.get('/verifySignUp',(req,res)=>{
 	var _email = req.query.email;
 	var _password = req.query.password;
-
-	console.log("zo verify");
 
 	if (_email != null && _password != null){
 			defaultAuth.createUserWithEmailAndPassword(_email, _password).then(function(user) {

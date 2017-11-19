@@ -3,19 +3,6 @@
 <head>
 	<title>Driver</title>
 	<link rel="stylesheet" type="text/css" href="css/style.css">
-	<script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
-	<script>
-	  // Initialize Firebase
-	  var config = {
-	    apiKey: "AIzaSyCPsM92WXpL9n_APrHNbO0CtkT_FbAcuBY",
-	    authDomain: "barg-midterm.firebaseapp.com",
-	    databaseURL: "https://barg-midterm.firebaseio.com",
-	    projectId: "barg-midterm",
-	    storageBucket: "barg-midterm.appspot.com",
-	    messagingSenderId: "263139149669"
-	  };
-	  firebase.initializeApp(config);
-	</script>
 </head>
 <body>
 
@@ -25,97 +12,194 @@
   </ul>
 </div>
 
+ <div id="map"></div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAM0uiCd8v3-ef9qhPzZuOgWTPZON_SZvM&callback=initMap" async defer></script>
+    <script src="js/map.js"></script>
+
 <script src="js/jquery.min.js"></script>
+<script src="assests/jquery-3.1.1.min.js"></script>
+ 
 
-<!-- <script type="text/javascript">
-	$(function() {
-		$.ajax({
-				url: `http://localhost:3002/push-new-booking-deal`,
-				dataType: 'json',
-				timeout: 10000
-			}).done(function(data){
-			
-				if (data != null){
-					alert(data.address);
-				}else{
-					alert("no data");
+<script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
+    <script>
+              // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyCPsM92WXpL9n_APrHNbO0CtkT_FbAcuBY",
+            authDomain: "barg-midterm.firebaseapp.com",
+            databaseURL: "https://barg-midterm.firebaseio.com",
+            projectId: "barg-midterm",
+            storageBucket: "barg-midterm.appspot.com",
+            messagingSenderId: "263139149669"
+        };
+        firebase.initializeApp(config);
+    </script>
+    <script type="text/javascript">
+       // function test() {
+
+            var database = firebase.database().ref('book-list');
+
+            var setChildAddedMessage = function (data) {
+               addNewLi(data);
+                		          
+               
+            }.bind(this);
+
+
+            var setChildChangedMessage = function (data) {
+               
+                var nums = document.getElementById("ul-list");
+				var listItem = nums.getElementsByTagName("li");
+
+				var newNums = [];
+
+				for (var i=0; i < listItem.length; i++) {
+				    if ($(listItem[i]).find(".key").text() == data.key){
+				    	listItem[i].parentNode.removeChild(listItem[i]);
+				    }
 				}
-	          				
-			}).fail(function(jqXHR, textStatus, error){
-				console.log(textStatus);
-				console.log(error);
-				console.log(jqXHR);
-			});
-	});
-</script>
- -->
- <script type="text/javascript">
- 	
- // 	var defaultDatabase = this.database();
-	// var defaultDatabaseRef = defaultDatabase.ref();
-
- // 	var ref = defaultDatabaseRef;
-	// var newBookingDeal = null;
-
-	// 	// ref.child("book-list").on('value', function(book) {
-	// 	// 	//if (book.val().state == "finding"){
-	// 	//    			newBookingDeal = book.val();
-	// 	//    			alert("change");
-	// 	//    	//}
-	// 	//    	//res.json(newBookingDeal);
-	// 	// });
+				addNewLi(data);
+						            
+            }.bind(this);
 
 
-	// 	ref.child("book-list").once("value", function(snapshot) {
-	// 	   snapshot.forEach(book => {
+            var setChildRemovedMessage = function (data) {
+               
+                var nums = document.getElementById("ul-list");
+				var listItem = nums.getElementsByTagName("li");
 
-	// 	   		// if (book.val().state == "finding"){
-	// 	   		// 	app.locals.history_List.push(book.val());
-	// 	   		// }
-	// 	   		alert(book.val().address);
-	// 	   });
-	// 	});
-	// 	  // ref.child("book-list").off();
-	// 	   //res.json(app.locals.history_List);
+				var newNums = [];
 
-	 // Reference to the /messages/ database path.
-	  var database = firebase.database();
-    var messagesRef = database.ref('book-list');
-    // Make sure we remove all previous listeners.
-    messagesRef.off();
+				for (var i=0; i < listItem.length; i++) {
+				    if ($(listItem[i]).find(".key").text() == data.key){
+				    	listItem[i].parentNode.removeChild(listItem[i]);
+				    }
+				}
+						            
+            }.bind(this);
 
-    alert("zo");
-    // Loads the last 12 messages and listen for new ones.
-    var setMessage = function (data) {
-        var val = data.val();
-        alert("zo2");
-    }.bind(this);
-    messagesRef.limitToLast(12).on('value', setMessage);
-    messagesRef.limitToLast(12).on('child_changed', setMessage);
 
- </script>
+            database.on('child_added', setChildAddedMessage);
+            database.on('child_changed', setChildChangedMessage);
+            database.on('child_removed', setChildRemovedMessage);
+    </script>
+
 <script type="text/javascript">
-	$(function() {
-		$.ajax({
-				url: `http://localhost:3002/waiting-booking-deal`,
-				dataType: 'json',
-				timeout: 10000
-			}).done(function(data){
-			
-				$.each(data, function(idx, c) {
-					var li = '<li class="list-li" onclick="getDetail(this)"><img src="images/new-icon.png"/><h3>Address: '+c.address+'</h3>'+ '<p>Lat: '+c.lat+'</p>'+'<p>Long: '+c.long+'</p>'+ '<p>Vehicle type: '+c.vehicle+'</p>'
-					+  '<p>State: '+c.state+'</p>'
-					+  '<p>Note: '+c.note+'</p></li>';	
+	function addNewLi(data){
+		var c = data.val();
+		if (c.state == "finding"){
+			var li = '<li onclick="getDetail(this);"><img src="images/new-icon.png"/><p style="display: none" class="key">'+data.key+'</p><h3 >Address: <p class="address"  style="display:inline">'+c.address+'</p></h3>';
 
+                	if (c.lat != null){
+                		li += '<p style="display:inline">Lat: <p style="display:inline">'+c.lat+'</p></p>'+'<p>Long: '+c.long+'</p></p>';	
+                	} 
+
+                	li += '<p style="display:inline">Vehicle type: <p style="display:inline">'+c.vehicle+'</p></p>'
+					+  '<p style="display:inline">State: <p style="display:inline"><strong>'+c.state+'</strong></p></p>'
+					+  '<p style="display:inline">PhoneNumber: <p style="display:inline">'+c.phoneNumber+'<p></p>'
+					+  '<p style="display:inline">Note: <p style="display:inline">'+c.note+'<p></p></li>';	
+				
 		            $('#ul-list').append(li);
-	          	});
+		}
+                
+	}
+</script>
+
+<script type="text/javascript">
+	// $(function() {
+	// 	$.ajax({
+	// 			url: `http://localhost:3003/booking-deals`,
+	// 			dataType: 'json',
+	// 			timeout: 10000
+	// 		}).done(function(data){
+			
+	// 			$.each(data, function(idx, c) {
+	// 				var li = '<li onclick="getDetail(this);"><img src="images/point-icon.png"/><h3>Address: '+c.address+'</h3>'+ '<p>Lat: '+c.lat+'</p>'+'<p>Long: '+c.long+'</p>'+ '<p>Vehicle type: '+c.vehicle+'</p>'
+	// 				+  '<p>State: <strong>'+c.state+'</strong></p>'
+	// 				+  '<p>PhoneNumber: '+c.phoneNumber+'</p>'
+	// 				+  '<p>Note: '+c.note+'</p>';	
+	// 				if (c.driverAddress != null){
+	// 					li += '<h3>Driver information</h3><p>Driver address: '
+	// 					+c.driverAddress+'</p><p>Driver name: '
+	// 					+c.driverName+'</p><p>Driver phone number: '
+	// 					+c.driverPhone+'</p></li>';
+	// 				}
+
+	// 	            $('#ul-list').append(li);
+	//           	});
 	          				
-			}).fail(function(jqXHR, textStatus, error){
-				console.log(textStatus);
-				console.log(error);
-				console.log(jqXHR);
-			});
-	});
+	// 		}).fail(function(jqXHR, textStatus, error){
+	// 			console.log(textStatus);
+	// 			console.log(error);
+	// 			console.log(jqXHR);
+	// 		});
+	// });
+</script>
+
+<script type="text/javascript">
+	function getDetail(item){
+		$('li').removeClass('highlight_stay');
+		 $(item).addClass('highlight_stay');
+
+		//alert($(item).find(".address").text());
+		//alert($(item).find(".driverAddress").text());
+		var customerAddress = $(item).find(".address").text();
+		var driverAddress = $(item).find(".driverAddress").text();
+
+		var count = item.childElementCount;
+		if (count < 12){
+			alert("This point haven't been process yet or not enough information to continue!");
+		}else{
+			// var i = 0 ;
+			// var childs = item.parentNode.childNodes;
+			//   for (; i < childs.length; i++) {
+			//     if (item == childs[i]) break;
+			//   }
+			//   $.ajax({
+			// 	url: `http://localhost:3003/getSelectedIndex?index=${i-1}`,
+			// 	dataType: 'json',
+			// 	timeout: 10000
+			// }).done(function(data){
+			// 	alert("zo");
+			// 	initMap(customerAddress, driverAddress); 
+			// }).fail(function(jqXHR, textStatus, error){
+			// 	console.log(textStatus);
+			// 	console.log(error);
+			// 	console.log(jqXHR);
+			// });
+
+			initMap(customerAddress, driverAddress); 
+		}
+		
+	}
+
+	function initMap(origin,destination) {
+        var directionsService = new google.maps.DirectionsService;
+        var directionsDisplay = new google.maps.DirectionsRenderer;
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 8,
+          center: {lat: 10.762698, lng: 106.682537}
+        });
+        directionsDisplay.setMap(map);
+
+        	calculateAndDisplayRoute(origin, destination, directionsService, directionsDisplay);
+       
+        }
+
+      function calculateAndDisplayRoute(origin, destination, directionsService, directionsDisplay) {
+        directionsService.route({
+          origin: origin,
+          destination: destination,
+          optimizeWaypoints: true,
+          travelMode: 'DRIVING'
+        }, function(response, status) {
+          if (status === 'OK') {
+            directionsDisplay.setDirections(response);
+          } else {
+            window.alert('Directions request failed due to ' + status);
+          }
+        });
+      }
+	
 </script>
 
 </body>
