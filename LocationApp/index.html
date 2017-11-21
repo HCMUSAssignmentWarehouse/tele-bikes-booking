@@ -11,14 +11,19 @@
 
 <body>
     <div class="floating-panel">
-        <input id="address" type="textbox" value="Hồ Chí Minh">
-        <input id="submit" type="submit" value="Geocode">
+        <input id="address" type="textbox" value="Hồ Chí Minh" style="width:500px;height:30px;">
+        <button class="button" id="geocoding">Geocoding</button>
+        
+        <label class="label">Lat: </label><input id="lat" type="text" style="width:150px;height:30px;" >
+        <input id="vehicle" type="text" style="display:none;" >
+        <label class="label" >Long: </label><input id="long" type="text" style="width:150px;height:30px;" >
+        <button class="button" id="btnOk">OK</button>
     </div>
 
-    <div id="map"></div>
+    <div id="map" ></div>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAM0uiCd8v3-ef9qhPzZuOgWTPZON_SZvM&callback=initMap" async defer></script>
-    <script src="js/map.js"></script>
+    <script src="js/map.js" type="text/javascript"></script>
 
     <script src="/assests/jquery-3.1.1.min.js"></script>
     <script src="js/jquery.min.js"></script>
@@ -36,30 +41,8 @@
         firebase.initializeApp(config);
         
     </script>
-    <script type="text/javascript">
 
-            var isbusy = false;
-
-            var database = firebase.database().ref('book-list');
-
-            var setAddedMessage = function (data) {
-                var val = data.val();
-
-                if (isbusy == false && val.state == "not location"){
-                    var message = "New book deal: "+ val.address;
-                    if (confirm(message)) {
-                    // Save it!
-                        isbusy = true;
-                    } else {
-                        // Do nothing!
-                    }
-                }
-                
-            }
-
-            database.on('child_added',setAddedMessage);
-    </script>
-
+ 
 </body>
 
 </html>

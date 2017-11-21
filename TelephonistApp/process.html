@@ -38,7 +38,11 @@
 		    <input type="text" id="address" name="field3" class="field-style field-full align-none" placeholder="Address" />
 		</li>
 		<li>
-		<input type="text" id="vehicleType" name="field3" class="field-style field-full align-none" placeholder="Vehicle type" />
+		<label>Vehicle type: </label>
+		<select  id="vehicleType" style="width: 200px; height: 30px;" >
+			<option>normal</option>
+			<option>premium</option>
+		</select>
 		</li>
 		<li>
 		<textarea name="field5" id="note" class="field-style" placeholder="Note"></textarea>
@@ -117,7 +121,7 @@
 					timeout: 10000
 				}).done(function(data){
 					if (data.message == 'success'){
-						alert("Add booking deadl success!");
+						alert("Add booking deal success!");
 						document.getElementById("phoneNumber").value = "";
 						document.getElementById("address").value = "";
 						document.getElementById("vehicleType").value = "";
