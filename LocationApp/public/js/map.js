@@ -3,6 +3,8 @@ var map;
 var marker;
 var driverList = [];
 var markers = [];
+var isbusy = false;
+
 
 function initMap() {
     //Get called after maps finish init
@@ -32,11 +34,7 @@ function initMap() {
         reverseLocation(event.latLng, reverse, infowindow);
     });
 
-    var isbusy = false;
-   
-    
-
-    var database = firebase.database().ref('book-list');
+    var database = firebase.database().ref('book-list');    
 
     var setAddedMessage = function (data) {
         var val = data.val();
@@ -48,6 +46,9 @@ function initMap() {
                 var currentKey = data.key;
                 document.getElementById("address").value = val.address;
                 document.getElementById("vehicle").value = val.vehicle;
+                document.getElementById("key").value = data.key;
+                document.getElementById("phone").value = val.phoneNumber;
+                document.getElementById("note").value = val.note;
                 isbusy = true;
                 var geocoder = new google.maps.Geocoder();
                 var reverse = new google.maps.Geocoder();
@@ -57,35 +58,7 @@ function initMap() {
                     position: { lat: -34.397, lng: 150.644 }
                 });
 
-                document.getElementById('btnOk').addEventListener('click', function() {
-                    var _address = document.getElementById("address").value;
-                    var _lat = document.getElementById("lat").value;
-                    var _long = document.getElementById("long").value;
-                    var _vehicle = document.getElementById("vehicle").value;
-            
-                    getTenClosetDrivers(geocoder, map, infowindow, 300, _lat, _long, _vehicle);
-                    
-                    if (_lat = "" || _long == "" || currentKey == null || data == null){
-                        alert("No booking-deal is located!");
-                    }else{
-                        var postData = {
-                            phoneNumber: _data.phoneNumber,
-                            address: _address,
-                            lat: _lat,
-                            long:  _long,
-                            vehicle: _data.vehicle,
-                            state: "finding",
-                            note: _data.note
-                        };
-                  
-                        // Write the new post's data simultaneously in the posts list and the user's post list.
-                        var updates = {};
-                        updates['/' + currentKey] = postData;
-                       database.update(updates);
-                       alert("Update success!");
-                       isbusy = false;
-                    }
-                });
+               
                 //Call geo coding function
                 geocodeAddress(geocoder, map, infowindow).lat();
                 
@@ -97,7 +70,43 @@ function initMap() {
 
     database.on('child_added',setAddedMessage);
     database.on('child_changed',setAddedMessage);
+
 }
+
+function onOkClicked(){
+
+    var database = firebase.database().ref('book-list');    
+    
+    var _address = document.getElementById("address").value;
+    var _lat = document.getElementById("lat").value;
+    var _long = document.getElementById("long").value;
+    var _vehicle = document.getElementById("vehicle").value;
+    var currentKey = document.getElementById("key").value;
+    var _phoneNumber = document.getElementById("phone").value;
+    var _note = document.getElementById("note").value;
+            
+    if (_lat = "" || _long == "" || currentKey ==""){
+        alert("No booking-deal is located!");
+    }else{
+        var postData = {
+            phoneNumber: _phoneNumber,
+            address: _address,
+            lat: _lat,
+            long:  _long,
+            vehicle: _vehicle,
+            state: "finding",
+            note: _note
+        };
+  
+        // Write the new post's data simultaneously in the posts list and the user's post list.
+        var updates = {};
+        updates['/' + currentKey] = postData;
+       database.update(updates);
+       alert("Book success! Finding driver...");
+       isbusy = false;
+    }
+}
+
 
 function reverseLocation(location, geocoder, infowindow) {
     geocoder.geocode({'location': location }, function(results, status) {
@@ -109,8 +118,15 @@ function reverseLocation(location, geocoder, infowindow) {
                 document.getElementById('long').value = location.lng();
                 marker.setPosition(location);
                 marker.setMap(map);
-                infowindow.setContent(results[0].formatted_address);
-                infowindow.open(map, marker);
+                // infowindow.setContent(results[0].formatted_address);
+                // infowindow.open(map, marker);
+
+                var _address = results[0].formatted_address;
+                var _lat = location.lat();
+                var _long = location.lng();
+                var _vehicle = document.getElementById("vehicle").value;
+        
+                getTenClosetDrivers(geocoder, map, infowindow, 300, _lat, _long, _vehicle);
             } else {
                 window.alert('Not found!');
             }
@@ -131,9 +147,17 @@ function geocodeAddress(geocoder, resultsMap, infowindow) {
             
             marker.setPosition(results[0].geometry.location);
             marker.setMap(map);
-            console.log(results[0]);
-            infowindow.setContent(results[0].formatted_address);
-            infowindow.open(resultsMap, pin); 
+            // console.log(results[0]);
+            // infowindow.setContent(results[0].formatted_address);
+            // infowindow.open(resultsMap, pin); 
+
+            var _address = document.getElementById("address").value;
+            var _lat = document.getElementById("lat").value;
+            var _long = document.getElementById("long").value;
+            var _vehicle = document.getElementById("vehicle").value;
+    
+            getTenClosetDrivers(geocoder, map, infowindow, 300, _lat, _long, _vehicle);
+          
 
         } else {
             alert('Not found:  ' + status);
