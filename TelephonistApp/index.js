@@ -11,7 +11,7 @@ firebase.initializeApp({
 	    projectId: "barg-midterm",
 	    storageBucket: "barg-midterm.appspot.com",
 	    messagingSenderId: "263139149669"
-}); 
+});
 
 
 var app = express();
@@ -42,7 +42,7 @@ app.locals.logined = false;
 app.locals.history_List = [];
 app.locals.selectedIndex = 0;
 
-app.get('/getSelectedIndex', (req, res) => {	
+app.get('/getSelectedIndex', (req, res) => {
 
 	if (app.locals.logined == true){
 		app.locals.selectedIndex = req.query.index;
@@ -51,8 +51,8 @@ app.get('/getSelectedIndex', (req, res) => {
             message:"success"
 	    }
 	    res.json(c);
-		
-	}else{
+
+	} else {
 		let c = {
             message:"fail"
 	    }
@@ -60,7 +60,7 @@ app.get('/getSelectedIndex', (req, res) => {
 	}
 });
 
-app.get('/callDriver', (req, res) => {	
+app.get('/callDriver', (req, res) => {
 
 	if (app.locals.logined == true){
 		var selectedHistory = app.locals.history_List[app.locals.selectedIndex];
@@ -74,52 +74,47 @@ app.get('/callDriver', (req, res) => {
             message:"success"
 	    }
 	    res.json(c);
-		
-	}else{
+
+	} else {
 		let c = {
             message:"fail"
 	    }
 	    res.json(c);
-	} 
+	}
 });
 
-app.get('/history', (req, res) => {	
-
+app.get('/history', (req, res) => {
 	if (app.locals.logined == true){
 		var phoneNumber = req.query.phoneNumber;
 		console.log("sdt:"+ phoneNumber);
 		app.locals.history_List = [];
-		
+
 		var ref = defaultDatabaseRef;
 
-		ref.child("book-list").once("value", function(snapshot) {
-		   snapshot.forEach(book => {
-		   		console.log(book.val().phoneNumber);
-
-		   		if (book.val().phoneNumber == phoneNumber){
-		   			app.locals.history_List.push(book.val());
-		   		}
-		   });
-
-		   ref.child("book-list").off();
-		   res.json(app.locals.history_List);
-
-		}, function (error) {
-		   console.log("Error: " + error.code);
-		   res.json(app.locals.history_List);
-
-		});
-	}else{
+		ref.child("book-list")
+			.orderByChild("phoneNumber")
+			.equalTo(phoneNumber)
+			.once("value")
+			.then(function(snapshot) {
+				snapshot.forEach(function(data) {
+			        app.locals.history_List.push(data.val());
+			    });
+			    res.json(app.locals.history_List);
+	    	}, function(error) {
+	    		console.log("Error: " + error.code);
+		   		res.json(app.locals.history_List);
+	    	});
+	} else {
 		res.sendFile('login.html', {
         	root: __dirname
     	});
-	}    
+	}
 });
 
 app.get('/verifyLogin',(req,res)=>{
 	var _email = req.query.email;
 	var _password = req.query.password;
-	
+
 	if (_email != null && _password != null){
 		var errorCode;
 		defaultAuth.signInWithEmailAndPassword(_email, _password).then(function(user) {
@@ -141,7 +136,7 @@ app.get('/verifyLogin',(req,res)=>{
 	        }
 	        res.statusCode = 201;
 	        res.json(c);
-		});			
+		});
 
 	}else{
 		 let c = {
@@ -149,7 +144,7 @@ app.get('/verifyLogin',(req,res)=>{
 		 }
 		 res.statusCode = 201;
 		 res.json(c);
-	}				
+	}
 });
 
 app.get('/verifySignUp',(req,res)=>{
@@ -160,7 +155,7 @@ app.get('/verifySignUp',(req,res)=>{
 
 	if (_email != null && _password != null){
 			defaultAuth.createUserWithEmailAndPassword(_email, _password).then(function(user) {
-			
+
 			console.log("sucess!");
 			 let c = {
 	            message:'success'
@@ -189,10 +184,10 @@ app.get('/verifySignUp',(req,res)=>{
 		 }
 		 res.statusCode = 201;
 		 res.json(c);
-	}			
+	}
 });
 
-app.get('/login', (req, res) => {	
+app.get('/login', (req, res) => {
 
     res.sendFile('login.html', {
         root: __dirname
@@ -250,7 +245,7 @@ app.get('/addNewBookingDeal', (req, res) => {
 			 }
 			 res.statusCode = 201;
 			 res.json(c);
-		}		
+		}
 	}else{
 		res.sendFile('login.html', {
         	root: __dirname
@@ -315,7 +310,7 @@ function writeNewPost(_phoneNumber,_address,_vehicleType, _state,_note) {
 	var updates = {};
 	updates['/book-list/' + newPostKey] = postData;
 	console.log("update");
-	defaultDatabaseRef.update(updates);	
+	defaultDatabaseRef.update(updates);
 }
 
 function writeNewPostWithLatLong(_phoneNumber,_address,_lat, _long,_vehicleType, _state,_note) {
