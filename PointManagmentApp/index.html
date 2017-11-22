@@ -149,8 +149,8 @@
 		var driverAddress = $(item).find(".driverAddress").text();
 
 		var count = item.childElementCount;
-		if (count < 12){
-			alert("This point haven't been process yet or not enough information to continue!");
+		if (count <= 20){
+			alert("This point haven't been received by any driver!");
 		}else{
 			// var i = 0 ;
 			// var childs = item.parentNode.childNodes;
@@ -184,7 +184,7 @@
         });
         directionsDisplay.setMap(map);
 
-        	calculateAndDisplayRoute(origin, destination, directionsService, directionsDisplay);
+        calculateAndDisplayRoute(origin, destination, directionsService, directionsDisplay);
        
         }
 

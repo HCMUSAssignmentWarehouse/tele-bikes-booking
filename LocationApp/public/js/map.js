@@ -4,6 +4,8 @@ var marker;
 var driverList = [];
 var markers = [];
 var isbusy = false;
+var isFirstTime = true;
+var notLocationBookingDealList = [];
 
 
 function initMap() {
@@ -34,42 +36,63 @@ function initMap() {
         reverseLocation(event.latLng, reverse, infowindow);
     });
 
-    var database = firebase.database().ref('book-list');    
+    var database = firebase.database().ref('book-list');  
+    
+    var setChangedMessage = function (data) {
+        var val = data.val();
+        for (var i = 0 ; i < notLocationBookingDealList.length ;i++){
+            if (data.key == notLocationBookingDealList[i].key){
+                if (data.val().state != "not location"){
+                    notLocationBookingDealList.splice(i, 1);
+                }
+            }
+        }
+    }
 
     var setAddedMessage = function (data) {
         var val = data.val();
-        if (isbusy == false && val.state == "not location"){
-            var message = "New book deal: "+ val.address;
-            if (confirm(message)) {
-            // Save it!
-                var _data = val;            
-                var currentKey = data.key;
-                document.getElementById("address").value = val.address;
-                document.getElementById("vehicle").value = val.vehicle;
-                document.getElementById("key").value = data.key;
-                document.getElementById("phone").value = val.phoneNumber;
-                document.getElementById("note").value = val.note;
-                isbusy = true;
-                var geocoder = new google.maps.Geocoder();
-                var reverse = new google.maps.Geocoder();
-                var infowindow = new google.maps.InfoWindow;
-                marker = new google.maps.Marker(
-                {
-                    position: { lat: -34.397, lng: 150.644 }
-                });
+        //alert(notLocationBookingDealList.length);
+        if (val.state == "not location"){
 
-               
-                //Call geo coding function
-                geocodeAddress(geocoder, map, infowindow).lat();
-                
-            } else {
-                // Do nothing!
+            notLocationBookingDealList.push(data);
+
+            if (isFirstTime == true){
+                var val = notLocationBookingDealList[0].val();
+                var message = "New book deal: "+ val.address;
+                if (confirm(message)) {
+                    isbusy = true;     
+                    isFirstTime = false;                    
+                    // Save it!
+                    var _data = val;            
+                    var currentKey = data.key;
+                    document.getElementById("address").value = val.address;
+                    document.getElementById("vehicle").value = val.vehicle;
+                    document.getElementById("key").value = data.key;
+                    document.getElementById("phone").value = val.phoneNumber;
+                    document.getElementById("note").value = val.note;
+                    var geocoder = new google.maps.Geocoder();
+                    var reverse = new google.maps.Geocoder();
+                    var infowindow = new google.maps.InfoWindow;
+                    marker = new google.maps.Marker(
+                    {
+                        position: { lat: -34.397, lng: 150.644 }
+                    });
+                               
+                    //Call geo coding function
+                    geocodeAddress(geocoder, map, infowindow).lat();
+                                
+                } else {
+                                // Do nothing!
+                }
+
             }
         }               
     }
 
+   
+
     database.on('child_added',setAddedMessage);
-    database.on('child_changed',setAddedMessage);
+    database.on('child_changed',setChangedMessage);
 
 }
 
@@ -88,6 +111,9 @@ function onOkClicked(){
     if (_lat = "" || _long == "" || currentKey ==""){
         alert("No booking-deal is located!");
     }else{
+
+        notLocationBookingDealList.splice(0, 1);
+        
         var postData = {
             phoneNumber: _phoneNumber,
             address: _address,
@@ -101,8 +127,37 @@ function onOkClicked(){
         // Write the new post's data simultaneously in the posts list and the user's post list.
         var updates = {};
         updates['/' + currentKey] = postData;
-       database.update(updates);
-       alert("Book success! Finding driver...");
+        database.update(updates);
+        alert("Book success! Finding driver...");
+       if (notLocationBookingDealList.length > 0){
+            var val = notLocationBookingDealList[0].val();
+            var message = "New book deal: "+ val.address;
+            if (confirm(message)) {
+                isbusy = true;                    
+                // Save it!
+                var _data = val;            
+                var currentKey = notLocationBookingDealList[0].key;
+                document.getElementById("address").value = val.address;
+                document.getElementById("vehicle").value = val.vehicle;
+                document.getElementById("key").value = notLocationBookingDealList[0].key;
+                document.getElementById("phone").value = val.phoneNumber;
+                document.getElementById("note").value = val.note;
+                var geocoder = new google.maps.Geocoder();
+                var reverse = new google.maps.Geocoder();
+                var infowindow = new google.maps.InfoWindow;
+                marker = new google.maps.Marker(
+                {
+                    position: { lat: -34.397, lng: 150.644 }
+                });
+                        
+                //Call geo coding function
+                geocodeAddress(geocoder, map, infowindow).lat();
+                            
+            } else {
+                            // Do nothing!
+            }
+       }
+       
        isbusy = false;
     }
 }
@@ -169,7 +224,6 @@ function geocodeAddress(geocoder, resultsMap, infowindow) {
 var rad = function(x) {
     return x * Math.PI / 180;
   };
-  
   var getDistance = function(lat1,long1,lat2, long2) {
     var R = 6378137; // Earth’s mean radius in meter
     var dLat = rad(lat2 - lat1);
