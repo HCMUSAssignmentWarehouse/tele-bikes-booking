@@ -82,6 +82,8 @@ function initMap() {
                     geocodeAddress(geocoder, map, infowindow).lat();
                                 
                 } else {
+
+                    onCancelClicked();
                                 // Do nothing!
                 }
 
@@ -188,6 +190,8 @@ function onOkClicked(){
                 geocodeAddress(geocoder, map, infowindow).lat();
                             
             } else {
+
+                onCancelClicked();
                             // Do nothing!
             }
        }
@@ -331,13 +335,16 @@ function findDriver(snapshot, geocoder, resultsMap, infowindow, radius, lat, lon
             
         // hiện 10 xe gần nhất
         for (var i = 0 ; i< 10 ; i++ ){
-            var marker = new google.maps.Marker({
-                position: new google.maps.LatLng(driverList[i].driver.lat, driverList[i].driver.long),
-                map: map,
-                icon: "images/icon_vehicle.png"                       
-            });
-
-            markers.push(marker);
+            if (i < driverList.length){
+                var marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(driverList[i].driver.lat, driverList[i].driver.long),
+                    map: map,
+                    icon: "images/icon_vehicle.png"                       
+                });
+    
+                markers.push(marker);
+            }
+            
         }
     }
     
