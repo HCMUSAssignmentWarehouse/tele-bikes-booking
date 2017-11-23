@@ -2,6 +2,8 @@ const express = require('express'),
     morgan = require('morgan'),
     path = require('path');
 
+var dateTime = require('node-datetime');
+
 var firebase =  require('firebase');
 
 firebase.initializeApp({
@@ -46,7 +48,6 @@ app.get('/getSelectedIndex', (req, res) => {
 
 	if (app.locals.logined == true){
 		app.locals.selectedIndex = req.query.index;
-		console.log("app.locals.selectedIndex: "+ app.locals.selectedIndex);
 		let c = {
             message:"success"
 	    }
@@ -64,10 +65,6 @@ app.get('/callDriver', (req, res) => {
 
 	if (app.locals.logined == true){
 		var selectedHistory = app.locals.history_List[app.locals.selectedIndex];
-
-		console.log("app.locals.history_List.length: " + app.locals.history_List.length);
-		console.log("app.locals.selectedIndex: "+ app.locals.selectedIndex);
-
 		writeNewPostWithLatLong(selectedHistory.phoneNumber,selectedHistory.address,selectedHistory.lat, selectedHistory.long,selectedHistory.vehicle,"finding",selectedHistory.note);
 
 		let c = {
@@ -86,7 +83,6 @@ app.get('/callDriver', (req, res) => {
 app.get('/history', (req, res) => {
 	if (app.locals.logined == true){
 		var phoneNumber = req.query.phoneNumber;
-		console.log("sdt:"+ phoneNumber);
 		app.locals.history_List = [];
 
 		var ref = defaultDatabaseRef;
@@ -151,12 +147,8 @@ app.get('/verifySignUp',(req,res)=>{
 	var _email = req.query.email;
 	var _password = req.query.password;
 
-	console.log("zo verify");
-
 	if (_email != null && _password != null){
 			defaultAuth.createUserWithEmailAndPassword(_email, _password).then(function(user) {
-
-			console.log("sucess!");
 			 let c = {
 	            message:'success'
 	        }
@@ -194,6 +186,14 @@ app.get('/login', (req, res) => {
     });
 });
 
+app.get('/', (req, res) => {
+
+    res.sendFile('login.html', {
+        root: __dirname
+    });
+});
+
+
 app.get('/signup', (req, res) => {
 
     res.sendFile('signup.html', {
@@ -229,8 +229,6 @@ app.get('/addNewBookingDeal', (req, res) => {
 		var address = req.query.address;
 		var vehicleType = req.query.vehicleType;
 		var note = req.query.note;
-
-		console.log("zo verify");
 
 		if (phoneNumber != null && address != null && vehicleType != null){
 			writeNewPost(phoneNumber,address,vehicleType,"not location",note);
@@ -292,30 +290,32 @@ app.get('/logout', (req, res) => {
 
 function writeNewPost(_phoneNumber,_address,_vehicleType, _state,_note) {
 
-	console.log("entry");
+	var dt = dateTime.create();
+	var formatted = dt.format('Y-m-d H:M:S');
   // A post entry.
 	  var postData = {
 	  	phoneNumber: _phoneNumber,
 	    address: _address,
 	    vehicle: _vehicleType,
 	    state: _state,
-	    note: _note
+	    note: _note,
+	    time:formatted
 	  };
 
-	console.log("new key");
 	  // Get a key for a new Post.
 	var newPostKey = defaultDatabaseRef.child('book-list').push().key;
 
 	  // Write the new post's data simultaneously in the posts list and the user's post list.
 	var updates = {};
 	updates['/book-list/' + newPostKey] = postData;
-	console.log("update");
 	defaultDatabaseRef.update(updates);
 }
 
 function writeNewPostWithLatLong(_phoneNumber,_address,_lat, _long,_vehicleType, _state,_note) {
 
-	console.log("entry");
+	var dt = dateTime.create();
+	var formatted = dt.format('Y-m-d H:M:S');
+
   // A post entry.
 	  var postData = {
 	  	phoneNumber: _phoneNumber,
@@ -324,24 +324,22 @@ function writeNewPostWithLatLong(_phoneNumber,_address,_lat, _long,_vehicleType,
 	    long:  _long,
 	    vehicle: _vehicleType,
 	    state: _state,
-	    note: _note
+	    note: _note,
+	    time:formatted
 	  };
 
-	console.log("new key");
 	  // Get a key for a new Post.
 	  var newPostKey = defaultDatabaseRef.child('book-list').push().key;
 
 	  // Write the new post's data simultaneously in the posts list and the user's post list.
 	  var updates = {};
 	  updates['/book-list/' + newPostKey] = postData;
-	  console.log("update");
 	 defaultDatabaseRef.update(updates);
 }
 
 
 function writeOneDriver(_phoneNumber,_address,_name) {
 
-	console.log("entry");
   // A post entry.
 	  var postData = {
 	  	driverPhone: _phoneNumber,
@@ -355,7 +353,6 @@ function writeOneDriver(_phoneNumber,_address,_name) {
 	  // Write the new post's data simultaneously in the posts list and the user's post list.
 	  var updates = {};
 	  updates['/driver-list/' + newPostKey] = postData;
-	  console.log("update");
 	 defaultDatabaseRef.update(updates);
 }
 

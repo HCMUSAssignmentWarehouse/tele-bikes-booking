@@ -2,7 +2,7 @@
 <html >
 <head>
   <meta charset="UTF-8">
-  <title>ATM APP</title>
+  <title>Telephone Bikes Booking</title>
   
   <style type="text/css">
   	/**
@@ -207,7 +207,7 @@ body {
 		</p> 	
 		<p class="login-remember"><label><input type="checkbox" id="rememberme" value="forever"> Remember Me</label></p>
 		<p class="login-submit">
-			<button id="login" class="button-primary" onclick="login()">Sign Up</button>
+			<button id="login" class="button-primary" onclick="signUp()">Sign Up</button>
 		</p>
 		
 		<a href="/login" style="margin-top: 16px; float: right; font-size: 14px; color: #1976D2; text-decoration: none;">Back to Login</a> 	
@@ -218,7 +218,35 @@ body {
 
 <script type="text/javascript">
 
-		function login(){
+		$( '#loginform' ).bind('keypress', function(e){
+		   if ( e.keyCode == 13 ) {
+		     	var _email = document.getElementById("email").value;
+				var _password = document.getElementById("password").value;
+
+				$.ajax({
+					url: `http://localhost:3003/verifySignUp?email=${_email}&password=${_password}`,
+					dataType: 'json',
+					contentType: 'application/json',
+					timeout: 10000
+				}).done(function(data){
+					if (data.message == 'success'){
+						window.location = `./login`;
+					}else{
+						alert(data.message);
+					}	
+				
+				}).fail(function(jqXHR, textStatus, error){
+					alert(error);
+					console.log(textStatus);
+					console.log(error);
+					console.log(jqXHR);
+				});
+			
+		   }
+		 });
+
+
+		function signUp(){
 			var _email = document.getElementById("email").value;
 			var _password = document.getElementById("password").value;
 

@@ -219,6 +219,32 @@ body {
 
 <script type="text/javascript">
 
+		$( '#loginform' ).bind('keypress', function(e){
+		   if ( e.keyCode == 13 ) {
+		     var _email = document.getElementById("email").value;
+			var _password = document.getElementById("password").value;
+
+			$.ajax({
+				url: `http://localhost:3000/verifyLogin?email=${_email}&password=${_password}`,
+				dataType: 'json',
+				contentType: 'application/json',
+				timeout: 10000
+			}).done(function(data){
+				if (data.message == 'success'){
+					window.location = `./process`;
+				}else{
+					alert(data.message);
+				}	
+			
+			}).fail(function(jqXHR, textStatus, error){
+				alert(error);
+				console.log(textStatus);
+				console.log(error);
+				console.log(jqXHR);
+			});
+		   }
+		 });
+
 		function login(){
 			var _email = document.getElementById("email").value;
 			var _password = document.getElementById("password").value;

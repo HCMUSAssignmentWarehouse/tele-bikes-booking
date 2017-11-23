@@ -47,62 +47,6 @@ app.get('/', (req, res) => {
 app.locals.history_List = [];
 app.locals.selectedIndex = 0;
 
-// app.get('/getSelectedIndex', (req, res) => {	
-
-// 	if (app.locals.logined == true){
-// 		app.locals.selectedIndex = req.query.index;
-// 		console.log("app.locals.selectedIndex: "+ app.locals.selectedIndex);
-// 		var selectedItem = app.locals.history_List[app.locals.selectedIndex]
-// 	    res.json(selectedItem);
-		
-// 	}else{
-// 		let c = {
-//             message:"fail"
-// 	    }
-// 	    res.json(c);
-// 	}
-// });
-
-
-app.get('/test',(req,res)=>{
-	var ref = defaultDatabase;
-		ref.ref("book-list").on("child_added", function(snapshot) {
-			console.log("zo");
-		   console.log(snapshot.val().address);
-		});
-		res.sendFile('login.html', {
-	        root: __dirname
-	    });
-});
-
-// app.get('/booking-deals', (req, res) => {	
-
-// 	if (app.locals.logined == true){
-// 		app.locals.history_List = [];
-		
-// 		var ref = defaultDatabaseRef;
-
-
-// 		ref.child("book-list").once("value", function(snapshot) {
-// 		   snapshot.forEach(book => {
-// 		   		app.locals.history_List.push(book.val());
-// 		   });
-// 		   ref.child("book-list").off();
-// 		   res.json(app.locals.history_List);
-
-// 		}, function (error) {
-// 			ref.child("book-list").off();
-// 		   console.log("Error: " + error.code);
-// 		   res.json(app.locals.history_List);
-
-// 		});
-// 	}else{
-// 		res.sendFile('login.html', {
-//         	root: __dirname
-//     	});
-// 	}    
-// });
-
 app.get('/verifyLogin',(req,res)=>{
 	var _email = req.query.email;
 	var _password = req.query.password;
@@ -110,7 +54,6 @@ app.get('/verifyLogin',(req,res)=>{
 	if (_email != null && _password != null){
 		var errorCode;
 		defaultAuth.signInWithEmailAndPassword(_email, _password).then(function(user) {
-		console.log("sucess!");
 		app.locals.logined = true;
 		 let c = {
             message:'success'
@@ -145,9 +88,7 @@ app.get('/verifySignUp',(req,res)=>{
 
 	if (_email != null && _password != null){
 			defaultAuth.createUserWithEmailAndPassword(_email, _password).then(function(user) {
-			
-			console.log("sucess!");
-			 let c = {
+						 let c = {
 	            message:'success'
 	        }
 	        res.statusCode = 201;

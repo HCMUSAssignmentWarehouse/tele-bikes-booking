@@ -97,7 +97,6 @@ app.get('/verifyLogin',(req,res)=>{
 	if (_email != null && _password != null){
 		var errorCode;
 		defaultAuth.signInWithEmailAndPassword(_email, _password).then(function(user) {
-		console.log("sucess!");
 		app.locals.logined = true;
 		 let c = {
             message:'success'
@@ -130,12 +129,9 @@ app.get('/verifySignUp',(req,res)=>{
 	var _email = req.query.email;
 	var _password = req.query.password;
 
-	console.log("zo verify");
-
 	if (_email != null && _password != null){
 			defaultAuth.createUserWithEmailAndPassword(_email, _password).then(function(user) {
 			
-			console.log("sucess!");
 			 let c = {
 	            message:'success'
 	        }

@@ -52,11 +52,11 @@ function initMap() {
     var setAddedMessage = function (data) {
         var val = data.val();
         //alert(notLocationBookingDealList.length);
-        if (val.state == "not location"){
+        if (val.state == "not location"){           
 
             notLocationBookingDealList.push(data);
 
-            if (isFirstTime == true){
+            if (notLocationBookingDealList.length == 1){
                 var val = notLocationBookingDealList[0].val();
                 var message = "New book deal: "+ val.address;
                 if (confirm(message)) {
@@ -96,12 +96,46 @@ function initMap() {
 
 }
 
+function onCancelClicked(){
+    notLocationBookingDealList.splice(0, 1);
+
+   if (notLocationBookingDealList.length > 0){
+        var val = notLocationBookingDealList[0].val();
+        var message = "New book deal: "+ val.address;
+        if (confirm(message)) {
+            isbusy = true;                    
+            // Save it!
+            var _data = val;            
+            var currentKey = notLocationBookingDealList[0].key;
+            document.getElementById("address").value = val.address;
+            document.getElementById("vehicle").value = val.vehicle;
+            document.getElementById("key").value = notLocationBookingDealList[0].key;
+            document.getElementById("phone").value = val.phoneNumber;
+            document.getElementById("note").value = val.note;
+            var geocoder = new google.maps.Geocoder();
+            var reverse = new google.maps.Geocoder();
+            var infowindow = new google.maps.InfoWindow;
+            marker = new google.maps.Marker(
+            {
+                position: { lat: -34.397, lng: 150.644 }
+            });
+                    
+            //Call geo coding function
+            geocodeAddress(geocoder, map, infowindow).lat();
+                        
+        } else {
+                        // Do nothing!
+        }
+   }
+}
+
 function onOkClicked(){
 
     var database = firebase.database().ref('book-list');    
     
     var _address = document.getElementById("address").value;
     var _lat = document.getElementById("lat").value;
+
     var _long = document.getElementById("long").value;
     var _vehicle = document.getElementById("vehicle").value;
     var currentKey = document.getElementById("key").value;
@@ -117,7 +151,7 @@ function onOkClicked(){
         var postData = {
             phoneNumber: _phoneNumber,
             address: _address,
-            lat: _lat,
+            lat: document.getElementById("lat").value,
             long:  _long,
             vehicle: _vehicle,
             state: "finding",
@@ -241,14 +275,14 @@ function getTenClosetDrivers(geocoder, resultsMap, infowindow, radius, lat, long
     var database = firebase.database().ref('driver-list');
 
     database.once("value", function(snapshot) {
-        findDriver(snapshot, geocoder, resultsMap, infowindow, 300, lat, long, _vehicle);
+        findDriver(snapshot, geocoder, resultsMap, infowindow, 1000, lat, long, _vehicle);
 
-        if (driverList.length == 0){
-            findDriver(snapshot, geocoder, resultsMap, infowindow, 600, lat, long, _vehicle);            
-        }
-        if (driverList.length == 0){
-            findDriver(snapshot, geocoder, resultsMap, infowindow, 1000, lat, long, _vehicle);            
-        }
+        // if (driverList.length == 0){
+        //     findDriver(snapshot, geocoder, resultsMap, infowindow, 600, lat, long, _vehicle);            
+        // }
+        // if (driverList.length == 0){
+        //     findDriver(snapshot, geocoder, resultsMap, infowindow, 1000, lat, long, _vehicle);            
+        // }
         if (driverList.length == 0){
             alert("KHÔNG CÓ XE");
         }
