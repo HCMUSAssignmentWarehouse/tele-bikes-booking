@@ -75,7 +75,9 @@
       menuItems () {
         if (this.isAuthenticated) {
           return [
-            { title: 'Home', path: '/home', icon: 'home' }
+            { title: 'Home', path: '/home', icon: 'home' },
+            { title: 'Form', path: '/form', icon: 'add' },
+            { title: 'History', path: '/history', icon: 'history' }
           ]
         } else {
           return [

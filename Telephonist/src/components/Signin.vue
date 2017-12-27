@@ -1,5 +1,5 @@
 <template>
-  <v-layout column>
+  <v-layout column id="main-layout">
     <v-flex xs12 class="text-xs-center" mt-5>
       <h3>Sign In</h3>
     </v-flex>
@@ -74,3 +74,8 @@ export default {
   }
 }
 </script>
+<style scope>
+#main-layout{
+  
+}
+</style>
