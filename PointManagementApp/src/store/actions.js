@@ -28,8 +28,8 @@ function calculateAndDisplayRoute(origin, destination, directionsService, direct
       console.log("origin ",origin);
       console.log("destination ",destination);
         directionsService.route({
-          origin: "69 Hồ Thị Kỷ, Quận 10, Hồ Chí Minh, Việt Nam",
-          destination: "227 Nguyễn Văn Cừ, Quận 5, Hồ Chí Minh, Việt Nam",
+          origin: origin,
+          destination: destination,
           optimizeWaypoints: true,
           travelMode: 'DRIVING'
         }, function(response, status) {
