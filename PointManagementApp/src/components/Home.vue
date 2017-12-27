@@ -107,8 +107,8 @@ methods:{
 }  
 
 img{
-  height: 24px;
-  width:24px;
+  max-height: 24px;
+  width:auto;
   float: left;
   margin:8px;
 }
@@ -118,7 +118,8 @@ h3{
 }
 
 .list-li p{
-  font: 200 14px Georgia, Times New Roman, serif;
+  font: 200 24px Georgia, Times New Roman, serif;
+  font-size:1.5vw;
 }
 .label{
   float: left;
@@ -133,6 +134,10 @@ h3{
 h1{
   width:100%;
   text-align:center;
+  font-size:2vw;
+}
+h4{
+  font-size:1.5vw;
 }
 
 .list-li:hover {

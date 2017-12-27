@@ -25,9 +25,11 @@ function geocodeAddress(bookingDeal, geocoder, resultsMap, infowindow) {
 
 
 function calculateAndDisplayRoute(origin, destination, directionsService, directionsDisplay) {
+      console.log("origin ",origin);
+      console.log("destination ",destination);
         directionsService.route({
-          origin: origin,
-          destination: destination,
+          origin: "69 Hồ Thị Kỷ, Quận 10, Hồ Chí Minh, Việt Nam",
+          destination: "227 Nguyễn Văn Cừ, Quận 5, Hồ Chí Minh, Việt Nam",
           optimizeWaypoints: true,
           travelMode: 'DRIVING'
         }, function(response, status) {
