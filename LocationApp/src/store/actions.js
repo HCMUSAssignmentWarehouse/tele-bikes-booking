@@ -280,6 +280,72 @@ function geocodeAddress(geocoder, resultsMap, infowindow) {
 }
 
 
+function handleNewBookingDeal(){
+    var reverse = new google.maps.Geocoder();
+    var infowindow = new google.maps.InfoWindow;
+
+    //Get location on click 
+    google.maps.event.addListener(map, 'click', function(event) {
+        reverseLocation(event.latLng, reverse, infowindow);
+    });
+    var database = firebase.database().ref('book-list');    
+
+
+
+    var setAddedMessage = function (data) {
+        var val = data.val();
+        if (val.state == "not location"){           
+            console.log(val.address);
+            notLocationBookingDealList.push(data);
+            if (notLocationBookingDealList.length == 1){
+                val = notLocationBookingDealList[0].val();
+                var message = "New book deal: "+ val.address;
+                if (confirm(message)) {
+                    isbusy = true;     
+                    isFirstTime = false;     
+                    var postData = {
+                        phoneNumber: val.phoneNumber,
+                        address: val.address,                
+                        vehicle: val.vehicle,
+                        state: "locating",
+                        note: val.note
+                    };
+              
+                    // Write the new post's data simultaneously in the posts list and the user's post list.
+                    var updates = {};
+                    updates['/' + data.key] = postData;
+                    database.update(updates);              
+                    // Save it!             
+                    document.getElementById("address").value = val.address;
+                    document.getElementById("vehicle").value = val.vehicle;
+                    document.getElementById("key").value = data.key;
+                    document.getElementById("phone").value = val.phoneNumber;
+                    document.getElementById("note").value = val.note;       
+
+                    var geocoder = new google.maps.Geocoder();
+                    
+                   
+                    //Call geo coding function
+                    geocodeAddress(geocoder, map, infowindow).lat();           
+                    
+
+                                
+                } else {
+
+                    onCancelClicked();
+                                // Do nothing!
+                }
+
+            }
+        }               
+    }
+
+   
+    var database = firebase.database().ref('book-list');  
+
+    database.on('child_added',setAddedMessage);
+}
+
 export const actions = {
   userSignUp ({commit}, payload) {
     commit('setLoading', true)
@@ -323,58 +389,7 @@ export const actions = {
         position: { lat: -34.397, lng: 150.644 }
     });
     map = payload.map;
-    var reverse = new google.maps.Geocoder();
-    var infowindow = new google.maps.InfoWindow;
-
-    //Get location on click 
-    google.maps.event.addListener(map, 'click', function(event) {
-        reverseLocation(event.latLng, reverse, infowindow);
-    });
-
-
-    var setAddedMessage = function (data) {
-        var val = data.val();
-        //alert(notLocationBookingDealList.length);
-        if (val.state == "not location"){           
-
-            notLocationBookingDealList.push(data);
-
-            if (notLocationBookingDealList.length == 1){
-                var val = notLocationBookingDealList[0].val();
-                var message = "New book deal: "+ val.address;
-                if (confirm(message)) {
-                    isbusy = true;     
-                    isFirstTime = false;                   
-                    // Save it!             
-                    document.getElementById("address").value = val.address;
-                    document.getElementById("vehicle").value = val.vehicle;
-                    document.getElementById("key").value = data.key;
-                    document.getElementById("phone").value = val.phoneNumber;
-                    document.getElementById("note").value = val.note;       
-                    commit('setCurrentBookingDeal',notLocationBookingDealList[0])
-
-                    var geocoder = new google.maps.Geocoder();
-                    
-                   
-                    //Call geo coding function
-                    geocodeAddress(geocoder, map, infowindow).lat();           
-                    
-                                
-                } else {
-
-                    onCancelClicked();
-                                // Do nothing!
-                }
-
-            }
-        }               
-    }
-
-   
-    var database = firebase.database().ref('book-list');  
-
-    database.on('child_added',setAddedMessage);
-    database.on('child_changed',setChangedMessage);
+    handleNewBookingDeal();
 
   },
   onOkClick({commit}){
@@ -410,35 +425,8 @@ export const actions = {
         updates['/' + currentKey] = postData;
         database.update(updates);
         alert("Book success! Finding driver...");
-       if (notLocationBookingDealList.length > 0){
-            var val = notLocationBookingDealList[0].val();
-            var message = "New book deal: "+ val.address;
-            if (confirm(message)) {
-                isbusy = true;                    
-                // Save it!
-                var _data = val;            
-                var currentKey = notLocationBookingDealList[0].key;
-                document.getElementById("address").value = val.address;
-                document.getElementById("vehicle").value = val.vehicle;
-                document.getElementById("key").value = notLocationBookingDealList[0].key;
-                document.getElementById("phone").value = val.phoneNumber;
-                document.getElementById("note").value = val.note;
-                var geocoder = new google.maps.Geocoder();
-                var reverse = new google.maps.Geocoder();
-                var infowindow = new google.maps.InfoWindow;
-               
-                commit('setCurrentBookingDeal',notLocationBookingDealList[0])
-                        
-                //Call geo coding function
-                geocodeAddress(geocoder, map, infowindow).lat();
-                            
-            } else {
-
-                onCancelClicked();
-                            // Do nothing!
-            }
-       }
-       
+        notLocationBookingDealList = [];        
+        handleNewBookingDeal();
        isbusy = false;
     }
   },
