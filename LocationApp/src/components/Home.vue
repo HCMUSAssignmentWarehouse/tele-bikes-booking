@@ -81,6 +81,16 @@ methods:{
 
 <style scoped>
 
+#main-layout{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 40px;
+  padding: 24px;
+  text-align: center;
+
+}
+
 .google-map {
   width: 80%;
   height: 600px;
