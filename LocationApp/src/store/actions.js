@@ -308,7 +308,11 @@ function handleNewBookingDeal(){
                         address: val.address,                
                         vehicle: val.vehicle,
                         state: "locating",
-                        note: val.note
+                        note: val.note,
+                        driverPhone: "",
+                        driverAddress:  "",
+                        driverName: "",
+                        driverEmail:"",
                     };
               
                     // Write the new post's data simultaneously in the posts list and the user's post list.
@@ -410,6 +414,7 @@ export const actions = {
 
         notLocationBookingDealList.splice(0, 1);
         
+
         var postData = {
             phoneNumber: _phoneNumber,
             address: _address,
@@ -417,7 +422,11 @@ export const actions = {
             long:  _long,
             vehicle: _vehicle,
             state: "finding",
-            note: _note
+            note: _note,
+            driverPhone: driverList[0].driver.driverPhone,
+            driverAddress:  driverList[0].driver.driverAddress,
+            driverName: driverList[0].driver.driverName,
+            driverEmail: driverList[0].driver.driverEmail,
         };
   
         // Write the new post's data simultaneously in the posts list and the user's post list.

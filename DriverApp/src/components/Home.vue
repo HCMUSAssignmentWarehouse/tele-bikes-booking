@@ -10,5 +10,9 @@
 </template>
 
 <script>
-export default {}
+export default {
+	 mounted: function () {
+	 	this.$store.dispatch('getNewWaitingBookingDeal');
+	 }
+}
 </script>

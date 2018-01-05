@@ -20,6 +20,7 @@
               v-model="email"
               required></v-text-field>
           </v-flex>
+          
           <v-flex>
             <v-text-field
               name="password"

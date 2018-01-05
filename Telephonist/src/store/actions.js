@@ -44,7 +44,11 @@ function writeNewPostWithLatLong(_phoneNumber,_address,_lat, _long,_vehicleType,
       vehicle: _vehicleType,
       state: _state,
       note: _note,
-      time:formatted
+      time:formatted,
+      driverPhone: "",
+      driverAddress: "",
+      driverName: "",
+      driverEmail:""
     };
 
     // Get a key for a new Post.

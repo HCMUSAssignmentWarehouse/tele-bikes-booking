@@ -22,6 +22,24 @@
           </v-flex>
           <v-flex>
             <v-text-field
+              name="phoneNumber"
+              label="phoneNumber"
+              id="phoneNumber"
+              type="phoneNumber"
+              v-model="phoneNumber"
+              required></v-text-field>
+          </v-flex>
+          <v-flex>
+            <v-text-field
+              name="userName"
+              label="userName"
+              id="userName"
+              type="userName"
+              v-model="userName"
+              required></v-text-field>
+          </v-flex>
+          <v-flex>
+            <v-text-field
               name="password"
               label="Password"
               id="password"
@@ -74,7 +92,7 @@ export default {
       if (this.comparePasswords !== true) {
         return
       }
-      this.$store.dispatch('userSignUp', { email: this.email, password: this.password })
+      this.$store.dispatch('userSignUp', { email: this.email, password: this.password, phoneNumber:this.phoneNumber, userName: this.userName })
     }
   },
   watch: {

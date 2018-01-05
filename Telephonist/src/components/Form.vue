@@ -91,7 +91,8 @@
     position: absolute;
     width:100%;
     height: 100%;
-    padding: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
     top: 40px;  
 
 
