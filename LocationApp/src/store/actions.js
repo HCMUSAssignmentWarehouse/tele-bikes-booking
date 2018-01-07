@@ -91,6 +91,8 @@ function findDriver(snapshot, geocoder, resultsMap, infowindow, radius, lat, lon
             }
             
         }
+
+        console.log("10 xe gan nhat", driverList)
     }
     
 }
@@ -113,6 +115,68 @@ function getTenClosetDrivers(geocoder, resultsMap, infowindow, radius, lat, long
             alert("KHÔNG CÓ XE");
         }
     });    
+}
+
+    var i = 0, howManyTimes = 10;
+
+function sendRequestToDriver() {
+
+    console.log('start');
+
+     var database = firebase.database().ref('book-list');    
+    
+    var _address = document.getElementById("address").value;
+    var _lat = document.getElementById("lat").value;
+
+    var _long = document.getElementById("long").value;
+    var _vehicle = document.getElementById("vehicle").value;
+    var currentKey = document.getElementById("key").value;
+    var _phoneNumber = document.getElementById("phone").value;
+    var _note = document.getElementById("note").value;
+
+
+
+    database.orderByChild('address').equalTo(_address).on("value", function(snapshot) {
+        snapshot.forEach(function(data) {
+            if (data.key == currentKey){
+                console.log("con to currentKey");
+                if (data.val().state != "finding" && i != 0){
+                    console.log("con to equal");
+                    i = howManyTimes + 1;
+                }
+            }
+        });
+        console.log("con to ++i");
+    });  
+
+    if (i !=  howManyTimes + 1){
+         var postData = {
+        phoneNumber: _phoneNumber,
+        address: _address,
+        lat: document.getElementById("lat").value,
+        long:  _long,
+        vehicle: _vehicle,
+        state: "finding",
+        note: _note,
+        driverPhone: driverList[i].driver.driverPhone,
+        driverAddress:  driverList[i].driver.driverAddress,
+        driverName: driverList[i].driver.driverName,
+        driverEmail: driverList[i].driver.driverEmail,
+    };
+    var updates = {};
+    updates['/' + currentKey] = postData;
+    database.update(updates);
+    console.log("updated!" +i+ driverList[i].driver.driverName);
+
+
+    }
+
+   
+    ++i;
+    console.log( i );
+    if( i < howManyTimes ){
+        setTimeout( sendRequestToDriver, 5000 );
+    }
 }
 
 function onCancelClicked(){
@@ -148,74 +212,7 @@ function onCancelClicked(){
    }
 }
 
-function onOkClicked(){
 
-    var database = firebase.database().ref('book-list');    
-    
-    var _address = document.getElementById("address").value;
-    var _lat = document.getElementById("lat").value;
-
-    var _long = document.getElementById("long").value;
-    var _vehicle = document.getElementById("vehicle").value;
-    var currentKey = document.getElementById("key").value;
-    var _phoneNumber = document.getElementById("phone").value;
-    var _note = document.getElementById("note").value;
-            
-    if (_lat = "" || _long == "" || currentKey ==""){
-        alert("No booking-deal is located!");
-    }else{
-
-        notLocationBookingDealList.splice(0, 1);
-        
-        var postData = {
-            phoneNumber: _phoneNumber,
-            address: _address,
-            lat: document.getElementById("lat").value,
-            long:  _long,
-            vehicle: _vehicle,
-            state: "finding",
-            note: _note
-        };
-  
-        // Write the new post's data simultaneously in the posts list and the user's post list.
-        var updates = {};
-        updates['/' + currentKey] = postData;
-        database.update(updates);
-        alert("Book success! Finding driver...");
-       if (notLocationBookingDealList.length > 0){
-            var val = notLocationBookingDealList[0].val();
-            var message = "New book deal: "+ val.address;
-            if (confirm(message)) {
-                isbusy = true;                    
-                // Save it!
-                var _data = val;            
-                var currentKey = notLocationBookingDealList[0].key;
-                document.getElementById("address").value = val.address;
-                document.getElementById("vehicle").value = val.vehicle;
-                document.getElementById("key").value = notLocationBookingDealList[0].key;
-                document.getElementById("phone").value = val.phoneNumber;
-                document.getElementById("note").value = val.note;
-                var geocoder = new google.maps.Geocoder();
-                var reverse = new google.maps.Geocoder();
-                var infowindow = new google.maps.InfoWindow;
-                marker = new google.maps.Marker(
-                {
-                    position: { lat: -34.397, lng: 150.644 }
-                });
-                        
-                //Call geo coding function
-                geocodeAddress(geocoder, map, infowindow).lat();
-                            
-            } else {
-
-                onCancelClicked();
-                            // Do nothing!
-            }
-       }
-       
-       isbusy = false;
-    }
-}
 
 function reverseLocation(location, geocoder, infowindow) {
     geocoder.geocode({'location': location }, function(results, status) {
@@ -414,26 +411,63 @@ export const actions = {
 
         notLocationBookingDealList.splice(0, 1);
         
+        var numberOfDriver = 0;
+        if (driverList.length < 10){
+            numberOfDriver = driverList.length;
+        }else{
+            numberOfDriver = 10;
+        }
 
-        var postData = {
-            phoneNumber: _phoneNumber,
-            address: _address,
-            lat: document.getElementById("lat").value,
-            long:  _long,
-            vehicle: _vehicle,
-            state: "finding",
-            note: _note,
-            driverPhone: driverList[0].driver.driverPhone,
-            driverAddress:  driverList[0].driver.driverAddress,
-            driverName: driverList[0].driver.driverName,
-            driverEmail: driverList[0].driver.driverEmail,
-        };
+        alert("Book success! Finding driver...");
+        // var  i = 0;
+        // var isInProccessing = false;
+        // while (i< numberOfDriver && !isInProccessing){
+        //     isInProccessing = true;
+        //     console.log(driverList[i].driver.driverAddress);
+        //     var postData = {
+        //         phoneNumber: _phoneNumber,
+        //         address: _address,
+        //         lat: document.getElementById("lat").value,
+        //         long:  _long,
+        //         vehicle: _vehicle,
+        //         state: "finding",
+        //         note: _note,
+        //         driverPhone: driverList[i].driver.driverPhone,
+        //         driverAddress:  driverList[i].driver.driverAddress,
+        //         driverName: driverList[i].driver.driverName,
+        //         driverEmail: driverList[i].driver.driverEmail,
+        //     };
+        //     var updates = {};
+        //     updates['/' + currentKey] = postData;
+        //     database.update(updates);
+        //     console.log("updated!");
+        //     setTimeout(function() { 
+        //         console.log("Come to find another");
+        //         // database.orderByChild('address').equalTo(_address).on("value", function(snapshot) {
+        //         //     snapshot.forEach(function(data) {
+        //         //         if (data.key == currentKey){
+        //         //             if (data.val().state != "finding"){
+        //         //                 i = numberOfDriver + 1;
+        //         //             }
+        //         //         }
+        //         //     });
+
+        //         //     i++;
+        //         // });
+        //         i++;
+        //     }, 5000);
+        // }
+
+        sendRequestToDriver();
+
+        if (i == numberOfDriver){
+            alert("Not dirver accept this booking-deal!");
+        }
+
+        console.log("Come out");
   
         // Write the new post's data simultaneously in the posts list and the user's post list.
-        var updates = {};
-        updates['/' + currentKey] = postData;
-        database.update(updates);
-        alert("Book success! Finding driver...");
+        
         notLocationBookingDealList = [];        
         handleNewBookingDeal();
        isbusy = false;
