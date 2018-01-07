@@ -78,7 +78,7 @@ methods:{
     map.fitBounds(bounds.extend(position))
   });  
 
-  this.$store.dispatch('getNewWaitingBookingDeal');
+  this.$store.dispatch('getNewWaitingBookingDeal',{map:map});
 
 }
 

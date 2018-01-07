@@ -4,6 +4,10 @@ import router from '@/router'
 
 var currentBookingDeal = null;
 var currentDriver = null;
+var map = null;
+var marker = null;
+var directionsService;
+var directionsDisplay;
 
 function startCustomDialog(msg,duration){
     document.getElementById('blur-view').style.display = 'block';
@@ -55,6 +59,27 @@ function setBookingDealState(state) {
     bookingDealDatabase.update(updates);
     console.log("BookingDeal updated!");
 }
+
+
+function calculateAndDisplayRoute(origin, destination, directionsService, directionsDisplay) {
+      console.log("directionsService",directionsService);
+      console.log("directionsDisplay",directionsDisplay);
+      console.log("origin ",origin);
+      console.log("destination ",destination);
+        directionsService.route({
+          origin: origin,
+          destination: destination,
+          optimizeWaypoints: true,
+          travelMode: 'DRIVING'
+        }, function(response, status) {
+          if (status === 'OK') {
+            directionsDisplay.setDirections(response);
+          } else {
+            window.alert('Directions request failed due to ' + status);
+          }
+        });
+}
+
 
 export const actions = {
   userSignUp ({commit}, payload) {
@@ -128,7 +153,13 @@ export const actions = {
     commit('setUser', null)
     router.push('/')
   },
-  getNewWaitingBookingDeal(){
+  getNewWaitingBookingDeal({commit},payload){
+    map = payload.map;
+    directionsService = new google.maps.DirectionsService;
+    directionsDisplay = new google.maps.DirectionsRenderer;
+      
+    directionsDisplay.setMap(map);
+
     var setAddedMessage = function (data) {
         var val = data.val();
         var currentAcc = firebase.auth().currentUser;
@@ -152,6 +183,7 @@ export const actions = {
 
     document.getElementById('blur-view').style.display = 'none';
 
+    calculateAndDisplayRoute(currentDriver.val().driverAddress,  currentBookingDeal.val().address,directionsService, directionsDisplay);
   },
   onTheRoadToGuest(){
 

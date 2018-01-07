@@ -25,6 +25,11 @@ function geocodeAddress(bookingDeal, geocoder, resultsMap, infowindow) {
 
 
 function calculateAndDisplayRoute(origin, destination, directionsService, directionsDisplay) {
+
+
+
+      console.log("directionsService",directionsService);
+      console.log("directionsDisplay",directionsDisplay);
       console.log("origin ",origin);
       console.log("destination ",destination);
         directionsService.route({
@@ -90,6 +95,7 @@ export const actions = {
     directionsService = new google.maps.DirectionsService;
     directionsDisplay = new google.maps.DirectionsRenderer;
       
+    directionsDisplay.setMap(map);
 
     var setAddedMessage = function (data) {
          temptlist.push(data);
@@ -106,7 +112,7 @@ export const actions = {
     directionsDisplay.setMap(null);
     var geocoder = new google.maps.Geocoder();
     var infowindow = new google.maps.InfoWindow;
-    if (bookingDeal.val().state == 'received'){
+    if (bookingDeal.val().state == 'accepted'){
         directionsDisplay.setMap(map);
         calculateAndDisplayRoute(bookingDeal.val().driverAddress, bookingDeal.val().address, directionsService, directionsDisplay);      
     }else{
