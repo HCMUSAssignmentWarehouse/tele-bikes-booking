@@ -1,10 +1,11 @@
 <template>
   <div id="main-layout">
   <div id="buttons-layout">
-    <button>Start on the road to Guest</button>
-    <button>Arrive at Guest Location</button>
-    <button>Start to go</button>
-    <button>Arrive at the destination</button>
+    <button v-on:click="onTheRoadToGuest">Start on the road to Guest</button>
+    <button v-on:click="onArriveAtGuestLocation">Arrive at Guest Location</button>
+    <button v-on:click="onStartToGo">Start to go</button>
+    <button v-on:click="onArriveAtDestination">Arrive at the destination</button>
+    <button v-on:click="onFinish">Finish</button>
   </div>
     <div class="google-map" :id="mapName"></div>
   <div id="blur-view">
@@ -41,6 +42,21 @@
 methods:{
   onAcceptClick(){
     return this.$store.dispatch('onAcceptClick')
+  },
+  onTheRoadToGuest(){
+    return this.$store.dispatch('onTheRoadToGuest')
+  },
+  onArriveAtGuestLocation(){
+    return this.$store.dispatch('onArriveAtGuestLocation')
+  },
+  onStartToGo(){
+    return this.$store.dispatch('onStartToGo')
+  },
+  onArriveAtDestination(){
+    return this.$store.dispatch('onArriveAtDestination')
+  },
+  onFinish(){
+    return this.$store.dispatch('onFinish')
   }
 },
 

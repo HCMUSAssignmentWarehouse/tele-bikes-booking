@@ -12,6 +12,50 @@ function startCustomDialog(msg,duration){
       document.getElementById('blur-view').style.display = 'none';
     }, duration);
 }
+
+function setDriverState(state) {
+
+  var driverDatabase = firebase.database().ref('driver-list');  
+
+    var postData = {
+        driverAddress: currentDriver.val().driverAddress,
+        driverEmail:  currentDriver.val().driverEmail,
+        driverName:  currentDriver.val().driverName,
+        driverPhone:  currentDriver.val().driverPhone,
+        lat:  currentDriver.val().lat,
+        long: currentDriver.val().long,
+        state:  state,
+        type:  currentDriver.val().type,
+       
+    };
+    var updates = {};
+    updates['/' + currentDriver.key] = postData;
+    driverDatabase.update(updates);
+    console.log("Driver updated!");
+}
+
+function setBookingDealState(state) {
+  var bookingDealDatabase = firebase.database().ref('book-list');  
+
+    var postData = {
+        phoneNumber: currentBookingDeal.val().phoneNumber,
+        address:  currentBookingDeal.val().address,
+        lat:  currentBookingDeal.val().lat,
+        long:   currentBookingDeal.val().long,
+        vehicle:  currentBookingDeal.val().vehicle,
+        state: state,
+        note:  currentBookingDeal.val().note,
+        driverPhone:  currentBookingDeal.val().driverPhone,
+        driverAddress:   currentBookingDeal.val().driverAddress,
+        driverName: currentBookingDeal.val().driverName,
+        driverEmail: currentBookingDeal.val().driverEmail,
+    };
+    var updates = {};
+    updates['/' + currentBookingDeal.key] = postData;
+    bookingDealDatabase.update(updates);
+    console.log("BookingDeal updated!");
+}
+
 export const actions = {
   userSignUp ({commit}, payload) {
     commit('setLoading', true);
@@ -102,45 +146,32 @@ export const actions = {
     database.on('child_added',setAddedMessage);
   },
   onAcceptClick(){
-    var bookingDealDatabase = firebase.database().ref('book-list');  
-
-    var postData = {
-        phoneNumber: currentBookingDeal.val().phoneNumber,
-        address:  currentBookingDeal.val().address,
-        lat:  currentBookingDeal.val().lat,
-        long:   currentBookingDeal.val().long,
-        vehicle:  currentBookingDeal.val().vehicle,
-        state: "accepted",
-        note:  currentBookingDeal.val().note,
-        driverPhone:  currentBookingDeal.val().driverPhone,
-        driverAddress:   currentBookingDeal.val().driverAddress,
-        driverName: currentBookingDeal.val().driverName,
-        driverEmail: currentBookingDeal.val().driverEmail,
-    };
-    var updates = {};
-    updates['/' + currentBookingDeal.key] = postData;
-    bookingDealDatabase.update(updates);
-    console.log("BookingDeal updated!");
-
-    var driverDatabase = firebase.database().ref('driver-list');  
-
-    var postData = {
-        driverAddress: currentDriver.val().driverAddress,
-        driverEmail:  currentDriver.val().driverEmail,
-        driverName:  currentDriver.val().driverName,
-        driverPhone:  currentDriver.val().driverPhone,
-        lat:  currentDriver.val().lat,
-        long: currentDriver.val().long,
-        state:  "busy",
-        type:  currentDriver.val().type,
-       
-    };
-    var updates = {};
-    updates['/' + currentDriver.key] = postData;
-    driverDatabase.update(updates);
-    console.log("Driver updated!");
+    
+    setBookingDealState("accepted");
+    setDriverState('busy');
 
     document.getElementById('blur-view').style.display = 'none';
 
+  },
+  onTheRoadToGuest(){
+
+    console.log("onTheRoadToGuest");
+    setDriverState('on the road to the guest location');
+  },
+  onArriveAtGuestLocation(){
+    setDriverState('arrive at guest location');
+  },
+  onStartToGo(){
+    setBookingDealState('start to go');
+    setDriverState('start to go');
+  },
+  onArriveAtDestination(){
+    setBookingDealState('arrive at destination');
+    setDriverState('arrive at destination');
+  },
+  onFinish(){
+    setBookingDealState('payed');
+    setDriverState('available');
   }
+
 }
