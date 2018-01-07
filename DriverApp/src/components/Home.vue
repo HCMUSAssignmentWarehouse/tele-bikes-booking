@@ -1,19 +1,19 @@
 <template>
   <div id="main-layout">
   <div id="buttons-layout">
-    <button v-on:click="onTheRoadToGuest">Start on the road to Guest</button>
-    <button v-on:click="onArriveAtGuestLocation">Arrive at Guest Location</button>
-    <button v-on:click="onStartToGo">Start to go</button>
-    <button v-on:click="onArriveAtDestination">Arrive at the destination</button>
-    <button v-on:click="onFinish">Finish</button>
+    <button disabled="true" id="start-to-guest" v-on:click="onTheRoadToGuest">Start on the road to Guest</button>
+    <button disabled="true" id="arrivet-at-guest" v-on:click="onArriveAtGuestLocation">Arrive at Guest Location</button>
+    <button disabled="true" id="start-go" v-on:click="onStartToGo">Start to go</button>
+    <button disabled="true" id="arrive-at-destination" v-on:click="onArriveAtDestination">Arrive at the destination</button>
+    <button id="finish" v-on:click="onFinish">Finish</button>
   </div>
     <div class="google-map" :id="mapName"></div>
   <div id="blur-view">
     <div id="dialog">
     <p id="message"></p>
     <div>
-      <button v-on:click="onAcceptClick">Accept</button>
-      <button>Ignore</button>
+      <button class="dialog-button" v-on:click="onAcceptClick">Accept</button>
+      <button class="dialog-button">Ignore</button>
     </div>
   </div>
   </div>
@@ -106,16 +106,16 @@ methods:{
 
 #buttons-layout{
   margin-top:40px;
-  height: 10%;
+  padding-top: 10px;
+  padding-bottom: 10px;
   width: 100%;
   text-align: center;
 }
 button{
 
-  background-color: #2471A3;
+  background-color: #A6ACAF;
   border: none;
   color: white;
-  disabled: true;
   padding: 10px 20px;
   text-align: center;
   text-decoration: none;
@@ -126,6 +126,22 @@ button{
   margin-left: 4px;
   margin-right: 4px;
 }
+
+.dialog-button{
+   background-color: #2471A3;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1.5vw;
+  border-radius:3px;
+  margin-top:8px;
+  margin-left: 4px;
+  margin-right: 4px; 
+}
+
 #blur-view{
     position: absolute;
     top: 0;

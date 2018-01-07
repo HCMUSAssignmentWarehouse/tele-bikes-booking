@@ -6,6 +6,8 @@ var map = null;
 var marker = null;
 var directionsService;
 var directionsDisplay;
+var temptlist = []
+
 
 function geocodeAddress(bookingDeal, geocoder, resultsMap, infowindow) {
    var address = bookingDeal.val().address;
@@ -84,7 +86,6 @@ export const actions = {
     router.push('/')
   },
   getBookingDealList({commit},payload){
-    var temptlist = []
     map = payload.map;
      marker = new google.maps.Marker(
     {
@@ -97,15 +98,28 @@ export const actions = {
       
     directionsDisplay.setMap(map);
 
+    var database = firebase.database().ref('book-list');  
+
     var setAddedMessage = function (data) {
          temptlist.push(data);
          commit('setBookingdealList',temptlist);  
-    }
+    }.bind(this);
+
+    var setChangedMessage = function (data) {
+        for (var i = 0 ; i < temptlist.length ; i++){
+          
+          if (temptlist[i].key == data.key){
+              temptlist[i] = data;
+              console.log(temptlist[i].val());
+              commit('setBookingdealList',temptlist);  
+
+          }
+        }
+    }.bind(this);
 
    
-    var database = firebase.database().ref('book-list');  
-
     database.on('child_added',setAddedMessage);
+    database.on('child_changed',setChangedMessage);
   },
   getDetailLocation({commit},payload){
     var bookingDeal = payload.bookingDeal;

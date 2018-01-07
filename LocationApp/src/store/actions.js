@@ -419,45 +419,6 @@ export const actions = {
         }
 
         alert("Book success! Finding driver...");
-        // var  i = 0;
-        // var isInProccessing = false;
-        // while (i< numberOfDriver && !isInProccessing){
-        //     isInProccessing = true;
-        //     console.log(driverList[i].driver.driverAddress);
-        //     var postData = {
-        //         phoneNumber: _phoneNumber,
-        //         address: _address,
-        //         lat: document.getElementById("lat").value,
-        //         long:  _long,
-        //         vehicle: _vehicle,
-        //         state: "finding",
-        //         note: _note,
-        //         driverPhone: driverList[i].driver.driverPhone,
-        //         driverAddress:  driverList[i].driver.driverAddress,
-        //         driverName: driverList[i].driver.driverName,
-        //         driverEmail: driverList[i].driver.driverEmail,
-        //     };
-        //     var updates = {};
-        //     updates['/' + currentKey] = postData;
-        //     database.update(updates);
-        //     console.log("updated!");
-        //     setTimeout(function() { 
-        //         console.log("Come to find another");
-        //         // database.orderByChild('address').equalTo(_address).on("value", function(snapshot) {
-        //         //     snapshot.forEach(function(data) {
-        //         //         if (data.key == currentKey){
-        //         //             if (data.val().state != "finding"){
-        //         //                 i = numberOfDriver + 1;
-        //         //             }
-        //         //         }
-        //         //     });
-
-        //         //     i++;
-        //         // });
-        //         i++;
-        //     }, 5000);
-        // }
-
         sendRequestToDriver();
 
         if (i == numberOfDriver){
