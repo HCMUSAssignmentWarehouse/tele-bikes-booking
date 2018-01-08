@@ -5,6 +5,7 @@
     <h1>Information of booking-deal List</h1>
     <ul id="ul-history-list" >
      <li class="list-li" dismissible v-for="c in getBookingDealList"  v-on:click="onItemClick(c)" >
+      <p class="key">{{c.key}}</p>
       <img src="../assets/images/location_icon.png"/>
       <h4>Address: {{c.val().address}}</h4>
       <p>PhoneNumber: {{c.val().phoneNumber}}</p>      
@@ -111,6 +112,10 @@ img{
   width:auto;
   float: left;
   margin:8px;
+}
+
+.key{
+  display: none;
 }
 
 h3{
