@@ -28,7 +28,7 @@
       </span>
       <v-toolbar-title>
         <router-link to="/" tag="span" style="cursor: pointer">
-          Location App
+          {{ appTitle }}
         </router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>

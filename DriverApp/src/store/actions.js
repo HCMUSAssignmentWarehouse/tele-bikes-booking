@@ -226,6 +226,20 @@ export const actions = {
     router.push('/')
   },
   getNewWaitingBookingDeal({commit},payload){
+
+    if (!currentDriver){
+
+      var currentAcc = firebase.auth().currentUser;
+      var database = firebase.database().ref('driver-list');  
+ 
+          database.orderByChild('driverEmail').equalTo(currentAcc.email).on("value", function(snapshot) {
+              snapshot.forEach(function(data) {
+                  currentDriver = data;
+                  console.log("currentDriver",currentDriver.val());
+              });
+          });   
+    }
+
     map = payload.map;
      marker = new google.maps.Marker(
     {
