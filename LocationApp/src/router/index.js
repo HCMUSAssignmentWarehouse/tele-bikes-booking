@@ -7,6 +7,7 @@ const routerOptions = [
   { path: '/signup', component: 'Signup' },
   { path: '/home', component: 'Home' },
   { path: '/hello', component: 'HelloWorld'},
+  { path: '/main', component: 'Main'},
 ]
 
 const routes = routerOptions.map(route => {

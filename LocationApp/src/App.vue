@@ -75,7 +75,8 @@
       menuItems () {
         if (this.isAuthenticated) {
           return [
-            { title: 'Home', path: '/home', icon: 'home' }
+            { title: 'Home', path: '/home', icon: 'home' },
+            { title: 'Main', path: '/main', icon: 'menu' }
           ]
         } else {
           return [
