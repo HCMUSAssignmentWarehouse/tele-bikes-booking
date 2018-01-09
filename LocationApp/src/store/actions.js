@@ -167,12 +167,10 @@ function sendRequestToDriver() {
     database.update(updates);
     
     console.log("updated! i: " +i+" howManyTimes: "+ howManyTimes+  driverList[i].driver.driverName);
-
-
     }
    
     ++i;
-     if (i >= howManyTimes){
+     if (i >= howManyTimes ){
         alert("No driver accept this booking deal!");
         isbusy = false;
         notLocationBookingDealList = [];        
@@ -304,7 +302,8 @@ function handleNewBookingDeal(){
                 var message = "New book deal: "+ val.address;
                 if (confirm(message)) {
                     isbusy = true;     
-                    isFirstTime = false;     
+                    isFirstTime = false;   
+
                     var postData = {
                         phoneNumber: val.phoneNumber,
                         address: val.address,                

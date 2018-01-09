@@ -62,8 +62,11 @@ function findDriver(snapshot, radius, lat, long, _vehicle){
                 }
             }
         }
+
+        if (howManyTimes > driverList.length) howManyTimes = driverList.length;
             
         console.log("10 xe gan nhat", driverList)
+        console.log("howManyTimes", howManyTimes)
     }
     
 }
@@ -85,7 +88,7 @@ var i = 0, howManyTimes = 10;
 function sendRequestToDriver(address,lat,long,vehicle,key,phoneNumber,note) {
 
      var database = firebase.database().ref('book-list');    
-
+     console.log("key",key);
 
     database.child(key).on("value", function(snapshot) {
 
@@ -99,7 +102,7 @@ function sendRequestToDriver(address,lat,long,vehicle,key,phoneNumber,note) {
             }
         });
         
-    if (i !=  howManyTimes + 1 && i < driverList.length){
+    if (i < howManyTimes && i < driverList.length){
          var postData = {
         phoneNumber: phoneNumber,
         address: address,
@@ -121,6 +124,9 @@ function sendRequestToDriver(address,lat,long,vehicle,key,phoneNumber,note) {
 
    
     ++i;
+    if (i >= howManyTimes){
+        alert("No driver accept this booking deal!");
+    }
     console.log( i );
     if( i < howManyTimes ){
         setTimeout( ()=>{sendRequestToDriver(address,lat,long,vehicle,key,phoneNumber,note)}, 5000 );
@@ -291,6 +297,7 @@ export const actions = {
       i = 0;
       var key = writeNewPostWithLatLong(currentPayLoad.phoneNumber,currentPayLoad.address,currentPayLoad.lat, currentPayLoad.long,currentPayLoad.vehicle, "finding",currentPayLoad.note);
       getTenClosetDrivers(1000,currentPayLoad.lat, currentPayLoad.long,currentPayLoad.vehicle);
+      
       sendRequestToDriver(currentPayLoad.address,currentPayLoad.lat, currentPayLoad.long,currentPayLoad.vehicle,key,currentPayLoad.phoneNumber,currentPayLoad.note);
       commit('setLoading', false)
 
