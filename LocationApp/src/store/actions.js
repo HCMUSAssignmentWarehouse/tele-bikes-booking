@@ -135,21 +135,20 @@ function sendRequestToDriver() {
     var _note = document.getElementById("note").value;
 
 
-
-    database.orderByChild('address').equalTo(_address).on("value", function(snapshot) {
-        snapshot.forEach(function(data) {
-            if (data.key == currentKey){
-                console.log("con to currentKey");
-                if (data.val().state != "finding" && i != 0){
-                    console.log("con to equal");
-                    i = howManyTimes + 1;
-                }
+ database.child(currentKey).on("value", function(snapshot) {
+    if (snapshot.key == key){
+            if (snapshot.val().state != "finding" && i != 0 && i <= howManyTimes){
+                alert('Accepted by driver name: '+snapshot.val().driverName );                    
+                i = howManyTimes + 1;
+                database.off('value');
+                isbusy = false;
+                notLocationBookingDealList = [];        
+                handleNewBookingDeal();
             }
-        });
-        console.log("con to ++i");
+        }
     });  
 
-    if (i !=  howManyTimes + 1){
+    if (i <  howManyTimes){
          var postData = {
         phoneNumber: _phoneNumber,
         address: _address,
@@ -166,13 +165,19 @@ function sendRequestToDriver() {
     var updates = {};
     updates['/' + currentKey] = postData;
     database.update(updates);
-    console.log("updated!" +i+ driverList[i].driver.driverName);
+    
+    console.log("updated! i: " +i+" howManyTimes: "+ howManyTimes+  driverList[i].driver.driverName);
 
 
     }
-
    
     ++i;
+     if (i >= howManyTimes){
+        alert("No driver accept this booking deal!");
+        isbusy = false;
+        notLocationBookingDealList = [];        
+        handleNewBookingDeal();
+    }
     console.log( i );
     if( i < howManyTimes ){
         setTimeout( sendRequestToDriver, 5000 );
@@ -294,7 +299,7 @@ function handleNewBookingDeal(){
         if (val.state == "not location"){           
             console.log(val.address);
             notLocationBookingDealList.push(data);
-            if (notLocationBookingDealList.length == 1){
+            if (notLocationBookingDealList.length == 1 && !isbusy){
                 val = notLocationBookingDealList[0].val();
                 var message = "New book deal: "+ val.address;
                 if (confirm(message)) {
@@ -419,6 +424,8 @@ export const actions = {
         }
 
         alert("Book success! Finding driver...");
+        i = 0;
+        if (howManyTimes > driverList.length) howManyTimes = driverList.length;
         sendRequestToDriver();
 
         if (i == numberOfDriver){
@@ -429,9 +436,7 @@ export const actions = {
   
         // Write the new post's data simultaneously in the posts list and the user's post list.
         
-        notLocationBookingDealList = [];        
-        handleNewBookingDeal();
-       isbusy = false;
+        
     }
   },
   onCancelClick(){
