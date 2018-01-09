@@ -404,6 +404,9 @@ export const actions = {
     currentGuestState = 'payed';
     setBookingDealState(currentGuestState);
     setDriverState(currentDriverState);
+  },
+  onIgnoreClick(){
+    document.getElementById('blur-view').style.display = 'none';
   }
 
 }

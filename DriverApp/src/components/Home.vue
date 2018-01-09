@@ -13,7 +13,7 @@
     <p id="message"></p>
     <div>
       <button class="dialog-button" v-on:click="onAcceptClick">Accept</button>
-      <button class="dialog-button">Ignore</button>
+      <button class="dialog-button" v-on:click="onIgnoreClick">Ignore</button>
     </div>
   </div>
   </div>
@@ -42,6 +42,9 @@
 methods:{
   onAcceptClick(){
     return this.$store.dispatch('onAcceptClick')
+  },
+  onIgnoreClick(){
+    return this.$store.dispatch('onIgnoreClick')  
   },
   onTheRoadToGuest(){
     return this.$store.dispatch('onTheRoadToGuest')
