@@ -1,5 +1,133 @@
 import firebase from 'firebase'
 import router from '@/router'
+var driverList = [];
+var markers = [];
+var isbusy = false;
+var isFirstTime = true;
+var notLocationBookingDealList = [];
+var currentPayLoad = null;
+
+  var rad = function(x) {
+    return x * Math.PI / 180;
+  };
+
+  var getDistance = function(lat1,long1,lat2, long2) {
+    var R = 6378137; // Earth’s mean radius in meter
+    var dLat = rad(lat2 - lat1);
+    var dLong = rad(long2 - long1);
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(rad(lat1)) * Math.cos(rad(lat2)) *
+      Math.sin(dLong / 2) * Math.sin(dLong / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c;
+    return d; // returns the distance in meter
+  };
+
+function findDriver(snapshot, radius, lat, long, _vehicle){
+    driverList = [];
+
+    //var markers = [];
+    snapshot.forEach(driver => {
+        if (driver.val().state =="available" && driver.val().type == _vehicle){
+            var currLat = parseFloat(driver.val().lat);
+            var currLong = parseFloat(driver.val().long);
+
+            lat = parseFloat(lat);
+            long = parseFloat(long);
+
+            var m = getDistance(lat,long,currLat,currLong);
+            if (m <= radius){
+
+                var driverPoint = {
+                    driver: driver.val(),
+                    distance: m                       
+                }
+                driverList.push(driverPoint);
+                
+            }
+
+        }
+            
+    });
+
+    
+    //sap xep mang những chuyến xe nằm trong bán kính, đang available và thuộc loại xe mà khách hàng yêu cầu
+    if (driverList.length > 0){
+        for (var i = 0 ; i< driverList.length -1 ; i++ ){
+            for (var j = i+1 ; j< driverList.length ; j++ ){
+                if (driverList[i].distance > driverList[j].distance){
+                    var temp = driverList[i];
+                    driverList[i] =  driverList[j];
+                    driverList[j] = temp;
+                }
+            }
+        }
+            
+        console.log("10 xe gan nhat", driverList)
+    }
+    
+}
+
+function getTenClosetDrivers(radius, lat, long, _vehicle){
+
+    var database = firebase.database().ref('driver-list');
+
+    database.once("value", function(snapshot) {
+        findDriver(snapshot, 1000, lat, long, _vehicle);
+        if (driverList.length == 0){
+            alert("KHÔNG CÓ XE");
+        }
+    });    
+}
+
+var i = 0, howManyTimes = 10;
+
+function sendRequestToDriver(address,lat,long,vehicle,key,phoneNumber,note) {
+
+     var database = firebase.database().ref('book-list');    
+
+
+    database.child(key).on("value", function(snapshot) {
+
+            if (snapshot.key == key){
+                if (snapshot.val().state != "finding" && i != 0 && i <= howManyTimes){
+                    alert('Accepted by driver name: '+snapshot.val().driverName );                    
+                    i = howManyTimes + 1;
+                    database.off('value');
+                    return;
+                }
+            }
+        });
+        
+    if (i !=  howManyTimes + 1 && i < driverList.length){
+         var postData = {
+        phoneNumber: phoneNumber,
+        address: address,
+        lat: lat,
+        long:  long,
+        vehicle: vehicle,
+        state: "finding",
+        note: note,
+        driverPhone: driverList[i].driver.driverPhone,
+        driverAddress:  driverList[i].driver.driverAddress,
+        driverName: driverList[i].driver.driverName,
+        driverEmail: driverList[i].driver.driverEmail,
+    };
+    var updates = {};
+    updates['/' + key] = postData;
+    database.update(updates);
+    console.log("updated!" +i+ driverList[i].driver.driverName);
+    }
+
+   
+    ++i;
+    console.log( i );
+    if( i < howManyTimes ){
+        setTimeout( ()=>{sendRequestToDriver(address,lat,long,vehicle,key,phoneNumber,note)}, 5000 );
+    }
+}
+
+
 
 function writeNewPost(_phoneNumber,_address,_vehicleType, _state,_note) {
 
@@ -58,6 +186,7 @@ function writeNewPostWithLatLong(_phoneNumber,_address,_lat, _long,_vehicleType,
     var updates = {};
     updates['/book-list/' + newPostKey] = postData;
    defaultDatabaseRef.update(updates);
+   return newPostKey;
 }
 
 export const actions = {
@@ -125,11 +254,6 @@ export const actions = {
     var address = payload.address;
     var vehicleType = payload.vehicleType;
     var note = payload.note;
-
-    // console.log('phoneNumber '+ phoneNumber);
-    // console.log('address '+ address);
-    // console.log('vehicleType '+  vehicleType);
-    // console.log('note' + note);
     if (phoneNumber != null && address != null && vehicleType != null){
       writeNewPost(phoneNumber,address,vehicleType,"not location",note);
       commit('setLoading', false)
@@ -163,9 +287,14 @@ export const actions = {
     commit('setLoading', true)
 
     if (payload.phoneNumber != null && payload.address != null && payload.vehicle != null){
-      writeNewPostWithLatLong(payload.phoneNumber,payload.address,payload.lat, payload.long,payload.vehicle, payload.state,payload.note)
+      currentPayLoad = payload;
+      i = 0;
+      var key = writeNewPostWithLatLong(currentPayLoad.phoneNumber,currentPayLoad.address,currentPayLoad.lat, currentPayLoad.long,currentPayLoad.vehicle, "finding",currentPayLoad.note);
+      getTenClosetDrivers(1000,currentPayLoad.lat, currentPayLoad.long,currentPayLoad.vehicle);
+      sendRequestToDriver(currentPayLoad.address,currentPayLoad.lat, currentPayLoad.long,currentPayLoad.vehicle,key,currentPayLoad.phoneNumber,currentPayLoad.note);
       commit('setLoading', false)
-    }
-   }
 
+    }
+   },
+  
 }

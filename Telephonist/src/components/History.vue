@@ -149,8 +149,7 @@
     		if (this.$store.getters.getError){
     			alert(this.$store.getters.getError);
 	    	}
-	    	else if (this.$store.getters.getLoading == false)
-					alert("Book again success!")
+	    	
     	}
     }
    
