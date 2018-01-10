@@ -62,6 +62,9 @@
     		alert(this.$store.getters.getError);
     	}
     	else if (this.$store.getters.getLoading == false)
+        this.addphoneNumber = "";
+        this.address = "";
+        this.note = "";
 				alert("Book success!")
     },
     

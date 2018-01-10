@@ -184,7 +184,7 @@ function sendRequestToDriver() {
 }
 
 function onCancelClicked(){
-    console.log("cancel");
+    console.log("notLocationBookingDealList.length",notLocationBookingDealList.length);
     notLocationBookingDealList.splice(0, 1);
     isbusy = false;
    if (notLocationBookingDealList.length > 0){
@@ -195,7 +195,8 @@ function onCancelClicked(){
         currentNewBookingDeal = notLocationBookingDealList[0];
         var message = "New book deal: "+ val.address;
         document.getElementById('blur-view').style.display = 'block';
-        document.getElementById('message').innerHTML = message;           
+        document.getElementById('message').innerHTML = message;  
+        console.log("show");         
                     
     }
 
@@ -477,8 +478,10 @@ export const actions = {
     });    
   },
   onIgnoreClick(){
+    console.log("ignore");
     document.getElementById('blur-view').style.display = 'none';
     isbusy = false;
+    //onCancelClicked();
   }
 
 }

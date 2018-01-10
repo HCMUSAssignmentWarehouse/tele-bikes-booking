@@ -261,8 +261,11 @@ export const actions = {
     var vehicleType = payload.vehicleType;
     var note = payload.note;
     if (phoneNumber != null && address != null && vehicleType != null){
+      
       writeNewPost(phoneNumber,address,vehicleType,"not location",note);
       commit('setLoading', false)
+      
+        
     }
   },
 
