@@ -139,7 +139,9 @@ function sendRequestToDriver() {
  database.child(currentKey).on("value", function(snapshot) {
     if (snapshot.key == key){
             if (snapshot.val().state != "finding" && i != 0 && i <= howManyTimes){
-                alert('Accepted by driver name: '+snapshot.val().driverName );                    
+                alert('Accepted by driver name: '+snapshot.val().driverName ); 
+                document.getElementById('btnOk').style.backgroundColor = "#1A5276";
+                document.getElementById('btnOk').disabled = false;                   
                 i = howManyTimes + 1;
                 database.off('value');
                 isbusy = false;
@@ -173,6 +175,8 @@ function sendRequestToDriver() {
     ++i;
      if (i >= howManyTimes ){
         alert("No driver accept this booking deal!");
+        document.getElementById('btnOk').style.backgroundColor = "#1A5276";
+        document.getElementById('btnOk').disabled = false; 
         isbusy = false;
         notLocationBookingDealList = [];        
         handleNewBookingDeal();
@@ -384,7 +388,9 @@ export const actions = {
     var currentKey = document.getElementById("key").value;
     var _phoneNumber = document.getElementById("phone").value;
     var _note = document.getElementById("note").value;
-            
+     document.getElementById('btnOk').style.backgroundColor = "#A6ACAF";
+    document.getElementById('btnOk').disabled = true;
+
     if (_lat = "" || _long == "" || currentKey ==""){
         alert("No booking-deal is located!");
     }else{
