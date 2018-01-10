@@ -292,6 +292,8 @@ function handleNewBookingDeal(){
 
     var setAddedMessage = function (data) {
         var val = data.val();
+        console.log("notLocationBookingDealList.length",notLocationBookingDealList.length);
+        console.log("isbusy",isbusy);
         if (val.state == "not location"){           
             console.log(val.address);
             notLocationBookingDealList.push(data);
@@ -310,7 +312,7 @@ function handleNewBookingDeal(){
         var val = data.val();
         if (data.key == currentNewBookingDeal.key){  
             if (val.state != "not location")     {    
-           
+                notLocationBookingDealList.splice(0, 1);
                 document.getElementById('blur-view').style.display = 'none';
 
             }
