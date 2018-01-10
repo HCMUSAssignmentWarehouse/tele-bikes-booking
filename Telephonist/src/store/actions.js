@@ -261,7 +261,7 @@ export const actions = {
     var vehicleType = payload.vehicleType;
     var note = payload.note;
     if (phoneNumber != null && address != null && vehicleType != null){
-      
+
       writeNewPost(phoneNumber,address,vehicleType,"not location",note);
       commit('setLoading', false)
       
@@ -297,6 +297,7 @@ export const actions = {
 
     if (payload.phoneNumber != null && payload.address != null && payload.vehicle != null){
       currentPayLoad = payload;
+      alert("Finding driver...");
       i = 0;
       var key = writeNewPostWithLatLong(currentPayLoad.phoneNumber,currentPayLoad.address,currentPayLoad.lat, currentPayLoad.long,currentPayLoad.vehicle, "finding",currentPayLoad.note);
       getTenClosetDrivers(1000,currentPayLoad.lat, currentPayLoad.long,currentPayLoad.vehicle);
