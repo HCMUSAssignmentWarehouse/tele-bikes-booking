@@ -9,6 +9,7 @@ var isFirstTime = true;
 var notLocationBookingDealList = [];
 var map = null;
 var marker = null;
+var currentNewBookingDeal = null;
 
  // Sets the map on all markers in the array.
  function setMapOnAll(map) {
@@ -183,36 +184,36 @@ function sendRequestToDriver() {
 }
 
 function onCancelClicked(){
+    console.log("cancel");
     notLocationBookingDealList.splice(0, 1);
-
+    isbusy = false;
    if (notLocationBookingDealList.length > 0){
         var val = notLocationBookingDealList[0].val();
         var message = "New book deal: "+ val.address;
-        if (confirm(message)) {
-            isbusy = true;                    
-            // Save it!
-            var _data = val;            
-            var currentKey = notLocationBookingDealList[0].key;
-            document.getElementById("address").value = val.address;
-            document.getElementById("vehicle").value = val.vehicle;
-            document.getElementById("key").value = notLocationBookingDealList[0].key;
-            document.getElementById("phone").value = val.phoneNumber;
-            document.getElementById("note").value = val.note;
-            var geocoder = new google.maps.Geocoder();
-            var reverse = new google.maps.Geocoder();
-            var infowindow = new google.maps.InfoWindow;
-            marker = new google.maps.Marker(
-            {
-                position: { lat: -34.397, lng: 150.644 }
-            });
+        
+        isbusy = true;                    
+        currentNewBookingDeal = notLocationBookingDealList[0];
+        var message = "New book deal: "+ val.address;
+        document.getElementById('blur-view').style.display = 'block';
+        document.getElementById('message').innerHTML = message;           
                     
-            //Call geo coding function
-            geocodeAddress(geocoder, map, infowindow).lat();
-                        
-        } else {
-                        // Do nothing!
-        }
-   }
+    }
+
+    var setChangedMessage = function (data) {
+        var val = data.val();
+        if (data.key == currentNewBookingDeal.key){  
+            if (val.state != "not location")     {    
+           
+                document.getElementById('blur-view').style.display = 'none';
+
+            }
+        }               
+    }
+
+   
+    var database = firebase.database().ref('book-list');  
+
+    database.on('child_changed',setChangedMessage);
 }
 
 
@@ -288,9 +289,6 @@ function handleNewBookingDeal(){
     google.maps.event.addListener(map, 'click', function(event) {
         reverseLocation(event.latLng, reverse, infowindow);
     });
-    var database = firebase.database().ref('book-list');    
-
-
 
     var setAddedMessage = function (data) {
         var val = data.val();
@@ -299,47 +297,21 @@ function handleNewBookingDeal(){
             notLocationBookingDealList.push(data);
             if (notLocationBookingDealList.length == 1 && !isbusy){
                 val = notLocationBookingDealList[0].val();
+                currentNewBookingDeal = data;
                 var message = "New book deal: "+ val.address;
-                if (confirm(message)) {
-                    isbusy = true;     
-                    isFirstTime = false;   
+                document.getElementById('blur-view').style.display = 'block';
+                document.getElementById('message').innerHTML = message
 
-                    var postData = {
-                        phoneNumber: val.phoneNumber,
-                        address: val.address,                
-                        vehicle: val.vehicle,
-                        state: "locating",
-                        note: val.note,
-                        driverPhone: "",
-                        driverAddress:  "",
-                        driverName: "",
-                        driverEmail:"",
-                    };
-              
-                    // Write the new post's data simultaneously in the posts list and the user's post list.
-                    var updates = {};
-                    updates['/' + data.key] = postData;
-                    database.update(updates);              
-                    // Save it!             
-                    document.getElementById("address").value = val.address;
-                    document.getElementById("vehicle").value = val.vehicle;
-                    document.getElementById("key").value = data.key;
-                    document.getElementById("phone").value = val.phoneNumber;
-                    document.getElementById("note").value = val.note;       
+            }
+        }               
+    }
 
-                    var geocoder = new google.maps.Geocoder();
-                    
-                   
-                    //Call geo coding function
-                    geocodeAddress(geocoder, map, infowindow).lat();           
-                    
-
-                                
-                } else {
-
-                    onCancelClicked();
-                                // Do nothing!
-                }
+    var setChangedMessage = function (data) {
+        var val = data.val();
+        if (data.key == currentNewBookingDeal.key){  
+            if (val.state != "not location")     {    
+           
+                document.getElementById('blur-view').style.display = 'none';
 
             }
         }               
@@ -349,6 +321,7 @@ function handleNewBookingDeal(){
     var database = firebase.database().ref('book-list');  
 
     database.on('child_added',setAddedMessage);
+    database.on('child_changed',setChangedMessage);
 }
 
 export const actions = {
@@ -425,7 +398,7 @@ export const actions = {
         alert("Book success! Finding driver...");
         i = 0;
         if (howManyTimes > driverList.length) howManyTimes = driverList.length;
-        sendRequestToDriver();
+            sendRequestToDriver();
 
         if (i == numberOfDriver){
             alert("Not dirver accept this booking-deal!");
@@ -447,6 +420,63 @@ export const actions = {
                                        
     //Call geo coding function
     geocodeAddress(geocoder, map, infowindow).lat();
+  },
+  onAcceptClick(){
+    var infowindow = new google.maps.InfoWindow;
+    var database = firebase.database().ref('book-list');    
+
+    isbusy = true;     
+    isFirstTime = false; 
+    var isInProccessing = true;  
+    var val = currentNewBookingDeal.val();
+
+    database.child(currentNewBookingDeal.key).on("value", function(snapshot) {
+
+        if (snapshot.key == currentNewBookingDeal.key){
+            var state = snapshot.val().state;
+            if (state == "not location"){
+                isInProccessing = false;
+                var postData = {
+                    phoneNumber: val.phoneNumber,
+                    address: val.address,                
+                    vehicle: val.vehicle,
+                    state: "locating",
+                    note: val.note,
+                    driverPhone: "",
+                    driverAddress:  "",
+                    driverName: "",
+                    driverEmail:"",
+                };
+                          
+                // Write the new post's data simultaneously in the posts list and the user's post list.
+                var updates = {};
+                updates['/' + currentNewBookingDeal.key] = postData;
+                database.update(updates);              
+                // Save it!             
+                document.getElementById("address").value = val.address;
+                document.getElementById("vehicle").value = val.vehicle;
+                document.getElementById("key").value = currentNewBookingDeal.key;
+                document.getElementById("phone").value = val.phoneNumber;
+                document.getElementById("note").value = val.note;       
+                document.getElementById('blur-view').style.display = 'none';
+
+                var geocoder = new google.maps.Geocoder();
+                    
+                //Call geo coding function
+                geocodeAddress(geocoder, map, infowindow).lat();
+                    
+            }                    
+        }
+
+        if (isInProccessing){
+            alert("This booking-deal is in proccessing by other staff!");
+            document.getElementById('blur-view').style.display = 'none';
+        }
+    });    
+  },
+  onIgnoreClick(){
+    document.getElementById('blur-view').style.display = 'none';
+    isbusy = false;
   }
 
 }
