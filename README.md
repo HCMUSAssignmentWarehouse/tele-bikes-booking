@@ -2,8 +2,8 @@
 These App is Simple Single Page Applications about booking motobike by phone. It includes: 
 * [x] Telephonist App: Get information about new booking-deal from guest via phone then create new booking-deal. Besides, guest can request for history and book again the booking deal that was booked success.
 * [x] Location App: Get new booking-deal from Telephonist to locate and save lat, long. Then, request driver for this booking deal from the nearest driver in 1000 meter radius.
-* [PointManagement App] Show information about all booking deal realtime.
-* [Driver App] Get request from Location App then Accept or Ignore the booking deal. If Accept, update the status of the trip and the address realtime.
+* [x] PointManagement App: Show information about all booking deal realtime.
+* [x] Driver App: Get request from Location App then Accept or Ignore the booking deal. If Accept, update the status of the trip and the address realtime.
 
 Time spent: **36** hours spent in total
 
