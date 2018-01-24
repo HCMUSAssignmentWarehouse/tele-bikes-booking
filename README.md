@@ -1,4 +1,7 @@
 # TeleBikesBooking
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2d617e386eab4d4bbc4b3606f9a9a14a)](https://www.codacy.com/app/nhoxbypass/TeleBikesBooking?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=HCMUS-AssignmentWarehouse/TeleBikesBooking&amp;utm_campaign=Badge_Grade)
+
 These App is Simple Single Page Applications about booking motobike by phone. It includes: 
 * [x] Telephonist App: Get information about new booking-deal from guest via phone then create new booking-deal. Besides, guest can request for history and book again the booking deal that was booked success.
 * [x] Location App: Get new booking-deal from Telephonist to locate and save lat, long. Then, request driver for this booking deal from the nearest driver in 1000 meter radius.
